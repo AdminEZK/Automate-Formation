@@ -13,6 +13,63 @@
   color: #333;
 }
 
+/* Barre de progression */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  padding: 0 2rem;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.progress-step.active .step-number {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.progress-step.active .step-label {
+  color: #4a90e2;
+  font-weight: 600;
+}
+
+.progress-line {
+  flex: 1;
+  height: 2px;
+  background-color: #e5e7eb;
+  margin: 0 1rem;
+  transition: all 0.3s;
+}
+
+.progress-line.active {
+  background-color: #4a90e2;
+}
+
 .formation-form {
   display: flex;
   flex-direction: column;
@@ -89,26 +146,113 @@
   text-align: center;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 1rem;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-.submit-button {
-  background-color: #4a90e2;
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.participant-block {
+  background-color: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.participant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.participant-header h4 {
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.btn-add {
+  background-color: #16a34a;
   color: white;
   border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-add:hover {
+  background-color: #15803d;
+}
+
+.btn-remove {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.btn-remove:hover {
+  background-color: #b91c1c;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.btn-primary, .btn-secondary, .submit-button {
   padding: 0.8rem 2rem;
   font-size: 1rem;
   font-weight: 600;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #4a90e2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #3a7bc8;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.submit-button {
+  background-color: #16a34a;
+  color: white;
+  flex: 1;
 }
 
 .submit-button:hover {
-  background-color: #3a7bc8;
+  background-color: #15803d;
 }
 
 .submit-button:disabled {
