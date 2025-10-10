@@ -48,20 +48,17 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
-// Servir les fichiers statiques de React en production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'client/build')));
-  
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-  });
-}
+// Route de santé pour Render
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'API is running' });
+});
 
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
+  console.log(`Environnement: ${process.env.NODE_ENV || 'development'}`);
   console.log(`API disponible à l'adresse http://localhost:${PORT}/api`);
-  console.log(`Test d'email disponible à l'adresse http://localhost:${PORT}/api/test-email`);
+  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
 });
 
 /**
