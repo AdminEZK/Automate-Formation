@@ -6,13 +6,11 @@ services:
     region: frankfurt
     plan: starter
     buildCommand: npm install
-    startCommand: node index.js
+    startCommand: npm start
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_ANON_KEY
@@ -33,7 +31,7 @@ services:
     staticPublishPath: ./client/build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://automate-formation.onrender.com
+        value: https://automate-formation-backend.onrender.com
       - key: REACT_APP_SUPABASE_URL
         sync: false
       - key: REACT_APP_SUPABASE_ANON_KEY

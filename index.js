@@ -93,8 +93,10 @@ app.get('/api/test-email', async (req, res) => {
 });
 
 // Démarrer le serveur
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
+// Bind sur 0.0.0.0 pour être accessible depuis l'extérieur (requis par Render)
+const HOST = process.env.HOST || '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`Serveur démarré sur ${HOST}:${PORT}`);
   console.log(`Environnement: ${process.env.NODE_ENV || 'development'}`);
   console.log(`API disponible à l'adresse http://localhost:${PORT}/api`);
   console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
