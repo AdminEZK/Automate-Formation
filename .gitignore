@@ -2,6 +2,7 @@
 node_modules/
 client/node_modules/
 vue-client/node_modules/
+vue-client/
 
 # Environnement
 .env
