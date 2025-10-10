@@ -2,11 +2,12 @@ const fs = require('fs').promises;
 const path = require('path');
 const { PDFDocument } = require('pdf-lib');
 const { Document, Packer, Paragraph, TextRun, AlignmentType } = require('docx');
-const libre = require('libreoffice-convert');
+// const libre = require('libreoffice-convert'); // Désactivé temporairement - nécessite LibreOffice sur le serveur
 const { promisify } = require('util');
 
 // Convertir la fonction de conversion de LibreOffice en Promise
-const libreConvert = promisify(libre.convert);
+// const libreConvert = promisify(libre.convert); // Désactivé temporairement
+const libreConvert = null; // Placeholder
 
 /**
  * Service de génération de documents
