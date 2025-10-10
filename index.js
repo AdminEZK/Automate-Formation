@@ -58,11 +58,6 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
-// Route de santé pour Render
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'API is running' });
-});
-
 // Démarrer le serveur
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
