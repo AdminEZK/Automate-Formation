@@ -67,8 +67,9 @@ router.post('/demandes', async (req, res) => {
     }
 
     // 2. Créer la session de formation avec statut "demande"
-    // Si formation_catalogue_id est une chaîne (formation en dur), on met null et on stocke le titre
-    const isFormationEnDur = isNaN(formation.formation_catalogue_id);
+    // Vérifier si c'est un UUID valide ou une formation en dur (slug)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const isFormationEnDur = !uuidRegex.test(formation.formation_catalogue_id);
     
     const sessionData = {
       entreprise_id: entrepriseId,
