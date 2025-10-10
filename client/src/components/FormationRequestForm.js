@@ -109,8 +109,22 @@ const FormationRequestForm = () => {
       setParticipants([{ nom: '', prenom: '', email: '', telephone: '', fonction: '' }]);
 
     } catch (error) {
-      console.error('Erreur:', error);
-      setErrorMessage(error.response?.data?.message || 'Erreur lors de l\'envoi de la demande.');
+      console.error('Erreur complète:', error);
+      
+      let errorMsg = 'Erreur lors de l\'envoi de la demande.';
+      
+      if (error.response) {
+        // Le serveur a répondu avec un code d'erreur
+        errorMsg = error.response.data?.message || error.response.data?.error || errorMsg;
+      } else if (error.request) {
+        // La requête a été faite mais pas de réponse
+        errorMsg = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
+      } else {
+        // Erreur lors de la configuration de la requête
+        errorMsg = error.message || errorMsg;
+      }
+      
+      setErrorMessage(errorMsg);
     } finally {
       setLoading(false);
     }
