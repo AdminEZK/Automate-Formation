@@ -1,0 +1,48 @@
+version: '3'
+services:
+  windmill:
+    image: ghcr.io/windmill-labs/windmill:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:changeme@postgres:5432/windmill
+      - BASE_URL=http://localhost:8000
+      - RUST_LOG=info
+      - SUPABASE_URL=https://gasutiqukuekcnybwkrb.supabase.co
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    depends_on:
+      - postgres
+    volumes:
+      - windmill_data:/app/data
+
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=windmill
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service MCP pour Supabase utilisant la configuration JSON officielle
+  mcp-supabase:
+    image: node:18-alpine
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - SUPABASE_ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN}
+    volumes:
+      - ./supabase-mcp.json:/app/mcp-config.json
+    command: >
+      sh -c "
+        echo 'Installing npx...' &&
+        npm install -g npx &&
+        echo 'Starting Supabase MCP server...' &&
+        npx -y @supabase/mcp-server-supabase@latest --read-only --project-ref=${PROJECT_REF} --port=3000
+      "
+
+volumes:
+  windmill_data:
+  postgres_data:

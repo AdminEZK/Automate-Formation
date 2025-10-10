@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "url": "https://api.supabase.com",
+      "projectRef": "gasutiqukuekcnybwkrb",
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdhc3V0aXF1a3Vla2NueWJ3a3JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY0NTcyOTQsImV4cCI6MjA3MjAzMzI5NH0.S_plDasjc7GhXIAM9jBMFXVJWYCL4WWDHFnHK7co148"
+    }
+  }
+}

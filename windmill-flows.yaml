@@ -1,0 +1,201 @@
+flows:
+  - name: nouvelle_demande_formation
+    summary: Créer une nouvelle demande de formation
+    description: Ce flow permet de créer une nouvelle demande de formation avec gestion des entreprises, formations et participants
+    value:
+      modules:
+        - id: create_request
+          value:
+            type: script
+            path: u/francois/create_request
+            input:
+              entreprise:
+                id: null
+                nom: ""
+                adresse: ""
+                code_postal: ""
+                ville: ""
+                pays: France
+                email_contact: ""
+                telephone_contact: ""
+                nom_contact: ""
+              formation:
+                id: null
+                titre: ""
+                description: ""
+                duree_jours: 1
+                prix_ht_jour: 1200
+              session:
+                date_debut: ""
+                lieu: À distance
+                nombre_participants: 1
+                commentaires: ""
+            output: {}
+      path: u/francois/nouvelle_demande_formation
+      description: Ce flow permet de créer une nouvelle demande de formation avec gestion des entreprises, formations et participants
+      summary: Créer une nouvelle demande de formation
+      schema:
+        $schema: https://json-schema.org/draft/2020-12/schema
+        properties:
+          create_request:
+            type: object
+            properties:
+              id:
+                type: string
+              status:
+                type: string
+              message:
+                type: string
+        type: object
+        required:
+          - create_request
+
+  - name: liste_sessions_formation
+    summary: Liste des sessions de formation
+    description: Ce flow permet de lister et filtrer les sessions de formation existantes
+    value:
+      modules:
+        - id: list_sessions
+          value:
+            type: script
+            path: u/francois/list_sessions
+            input:
+              statut: tous
+              date_debut: ""
+              date_fin: ""
+              entreprise_id: null
+            output: {}
+      path: u/francois/liste_sessions_formation
+      description: Ce flow permet de lister et filtrer les sessions de formation existantes
+      summary: Liste des sessions de formation
+      schema:
+        $schema: https://json-schema.org/draft/2020-12/schema
+        properties:
+          list_sessions:
+            type: object
+            properties:
+              sessions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    formation_titre:
+                      type: string
+                    entreprise_nom:
+                      type: string
+                    date_debut:
+                      type: string
+                    statut:
+                      type: string
+        type: object
+        required:
+          - list_sessions
+
+  - name: generer_documents
+    summary: Générer les documents de formation
+    description: Ce flow permet de générer les documents nécessaires pour une session de formation (convocations, certificats, etc.)
+    value:
+      modules:
+        - id: generate_documents
+          value:
+            type: script
+            path: u/francois/generate_documents
+            input:
+              session_id: ""
+              type_document: convocation
+            output: {}
+      path: u/francois/generer_documents
+      description: Ce flow permet de générer les documents nécessaires pour une session de formation (convocations, certificats, etc.)
+      summary: Générer les documents de formation
+      schema:
+        $schema: https://json-schema.org/draft/2020-12/schema
+        properties:
+          generate_documents:
+            type: object
+            properties:
+              success:
+                type: boolean
+              message:
+                type: string
+              document_url:
+                type: string
+        type: object
+        required:
+          - generate_documents
+
+  - name: envoyer_convocations
+    summary: Envoyer les convocations par email
+    description: Ce flow permet d'envoyer les convocations aux participants d'une session de formation
+    value:
+      modules:
+        - id: send_invitations
+          value:
+            type: script
+            path: u/francois/send_invitations
+            input:
+              session_id: ""
+              message_personnalise: ""
+            output: {}
+      path: u/francois/envoyer_convocations
+      description: Ce flow permet d'envoyer les convocations aux participants d'une session de formation
+      summary: Envoyer les convocations par email
+      schema:
+        $schema: https://json-schema.org/draft/2020-12/schema
+        properties:
+          send_invitations:
+            type: object
+            properties:
+              success:
+                type: boolean
+              message:
+                type: string
+              emails_sent:
+                type: integer
+        type: object
+        required:
+          - send_invitations
+
+  - name: dashboard_formation
+    summary: Tableau de bord des formations
+    description: Vue d'ensemble des sessions de formation avec statistiques et accès rapide
+    value:
+      modules:
+        - id: stats
+          value:
+            type: script
+            path: u/francois/list_sessions
+            input:
+              statut: tous
+              date_debut: ""
+              date_fin: ""
+              entreprise_id: null
+            output: {}
+      path: u/francois/dashboard_formation
+      description: Vue d'ensemble des sessions de formation avec statistiques et accès rapide
+      summary: Tableau de bord des formations
+      schema:
+        $schema: https://json-schema.org/draft/2020-12/schema
+        properties:
+          stats:
+            type: object
+            properties:
+              sessions:
+                type: array
+                items:
+                  type: object
+              stats:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  en_cours:
+                    type: integer
+                  terminee:
+                    type: integer
+                  annulee:
+                    type: integer
+        type: object
+        required:
+          - stats
