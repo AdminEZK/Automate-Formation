@@ -3,11 +3,15 @@ require('dotenv').config();
 
 // Initialisation du client Supabase avec les variables d'environnement
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// Utiliser SERVICE_ROLE_KEY en priorité, sinon ANON_KEY, sinon SUPABASE_KEY (legacy)
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
 
 // Vérification des variables d'environnement
 if (!supabaseUrl || !supabaseKey) {
-  console.error('Erreur: Les variables d\'environnement SUPABASE_URL et SUPABASE_KEY doivent être définies');
+  console.error('Erreur: Les variables d\'environnement SUPABASE_URL et SUPABASE_ANON_KEY (ou SUPABASE_SERVICE_ROLE_KEY) doivent être définies');
+  console.error('SUPABASE_URL:', supabaseUrl ? '✓' : '✗');
+  console.error('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? '✓' : '✗');
+  console.error('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '✓' : '✗');
   process.exit(1);
 }
 
