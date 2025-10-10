@@ -1,6 +1,16 @@
 /**
  * Application principale pour l'automatisation des processus de formation
  */
+
+// Supprimer le warning de dépréciation punycode
+process.removeAllListeners('warning');
+process.on('warning', (warning) => {
+  if (warning.name === 'DeprecationWarning' && warning.message.includes('punycode')) {
+    return; // Ignorer ce warning spécifique
+  }
+  console.warn(warning);
+});
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
