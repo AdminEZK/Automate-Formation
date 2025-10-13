@@ -31,7 +31,7 @@ services:
     staticPublishPath: ./client/build
     envVars:
       - key: REACT_APP_API_URL
-        value: https://automate-formation-backend.onrender.com
+        value: https://automate-formation.onrender.com
       - key: REACT_APP_SUPABASE_URL
         sync: false
       - key: REACT_APP_SUPABASE_ANON_KEY
