@@ -16,18 +16,6 @@ const Header = () => {
             <li>
               <Link to="/">Demande de Formation</Link>
             </li>
-            <li>
-              <Link to="/dashboard">Tableau de bord</Link>
-            </li>
-            <li>
-              <Link to="/entreprises">Entreprises</Link>
-            </li>
-            <li>
-              <Link to="/formations">Formations</Link>
-            </li>
-            <li>
-              <Link to="/documents">Documents</Link>
-            </li>
           </ul>
         </nav>
       </div>
