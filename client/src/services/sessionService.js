@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// URL de base de l'API (doit inclure /api)
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
 /**
  * Service pour interagir avec l'API des sessions de formation
