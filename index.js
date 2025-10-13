@@ -30,8 +30,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 // Support multiple frontend URLs (production and development)
 const allowedOrigins = [
-  'https://automate-formation-1.onrender.com',        // Frontend Public (formulaire)
-  'https://automate-formation-dashboard.onrender.com', // Dashboard Admin
+  'https://automate-formation-1.onrender.com',              // Frontend Public (formulaire)
+  'https://automate-formation-dashboard-5i7p.onrender.com', // Dashboard Admin
   'https://automate-formation.onrender.com',
   'http://localhost:3000',
   'http://localhost:3001'
