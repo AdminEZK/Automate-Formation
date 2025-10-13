@@ -22,7 +22,7 @@ services:
       - key: FRONTEND_URL
         value: https://automate-formation-1.onrender.com
 
-  # Frontend React
+  # Frontend Public - Formulaire de demande
   - type: web
     name: Automate-Formation-Frontend
     env: static
@@ -36,3 +36,14 @@ services:
         sync: false
       - key: REACT_APP_SUPABASE_ANON_KEY
         sync: false
+
+  # Dashboard Admin - Interface de gestion
+  - type: web
+    name: Automate-Formation-Dashboard
+    env: static
+    region: frankfurt
+    buildCommand: cd dashboard-client && npm install && npm run build
+    staticPublishPath: ./dashboard-client/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://automate-formation.onrender.com/api
