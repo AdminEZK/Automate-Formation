@@ -3,7 +3,6 @@ import { LayoutDashboard, Building2, FileText } from 'lucide-react';
 import { Dashboard } from './pages/Dashboard';
 import { SessionDetail } from './pages/SessionDetail';
 import { Entreprises } from './pages/Entreprises';
-import DemandeFormation from './pages/DemandeFormation';
 
 function Navigation() {
   const location = useLocation();
@@ -51,13 +50,15 @@ function Navigation() {
           </div>
           
           <div>
-            <Link
-              to="/demande-formation"
+            <a
+              href="https://automate-formation-1.onrender.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center gap-2"
             >
               <FileText className="w-4 h-4" />
               Nouvelle Demande
-            </Link>
+            </a>
           </div>
         </div>
       </div>
@@ -74,7 +75,6 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/sessions/:id" element={<SessionDetail />} />
           <Route path="/entreprises" element={<Entreprises />} />
-          <Route path="/demande-formation" element={<DemandeFormation />} />
         </Routes>
       </div>
     </Router>
