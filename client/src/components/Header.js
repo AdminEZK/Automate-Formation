@@ -11,13 +11,6 @@ const Header = () => {
             <h1>Automate Formation</h1>
           </Link>
         </div>
-        <nav className="main-nav">
-          <ul>
-            <li>
-              <Link to="/">Demande de Formation</Link>
-            </li>
-          </ul>
-        </nav>
       </div>
     </header>
   );
