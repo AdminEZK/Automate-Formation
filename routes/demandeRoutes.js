@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { createClient } = require('@supabase/supabase-js');
+const emailService = require('../services/emailService');
 require('dotenv').config();
 
 // Utiliser la clé SERVICE_ROLE pour bypasser le RLS (nécessaire pour les insertions backend)
@@ -17,6 +18,7 @@ router.post('/demandes', async (req, res) => {
 
     console.log('📝 Nouvelle demande de formation reçue');
     console.log('📧 Email entreprise:', entreprise.email_contact);
+    console.log('📊 Données reçues:', JSON.stringify({ entreprise, formation, participants }, null, 2));
 
     // 1. Vérifier si l'entreprise existe déjà (par email ou SIRET)
     let entrepriseId;
@@ -31,9 +33,14 @@ router.post('/demandes', async (req, res) => {
       // Entreprise existe déjà
       entrepriseId = entrepriseExistante.id;
       console.log('✅ Entreprise existante trouvée:', entrepriseId);
+      console.log('📝 Mise à jour avec:', { 
+        nom: entreprise.nom, 
+        adresse: entreprise.adresse,
+        ville: entreprise.ville 
+      });
 
       // Mettre à jour les informations si nécessaire
-      await supabase
+      const { error: updateError } = await supabase
         .from('entreprises')
         .update({
           nom: entreprise.nom,
@@ -43,6 +50,12 @@ router.post('/demandes', async (req, res) => {
           telephone: entreprise.telephone
         })
         .eq('id', entrepriseId);
+
+      if (updateError) {
+        console.error('❌ Erreur lors de la mise à jour de l\'entreprise:', updateError);
+      } else {
+        console.log('✅ Entreprise mise à jour avec succès');
+      }
 
     } else {
       // Créer une nouvelle entreprise
@@ -54,8 +67,10 @@ router.post('/demandes', async (req, res) => {
           adresse: entreprise.adresse || null,
           code_postal: entreprise.code_postal || null,
           ville: entreprise.ville || null,
+          pays: entreprise.pays || 'France',
           email_contact: entreprise.email_contact,
-          telephone: entreprise.telephone
+          telephone: entreprise.telephone,
+          site_web: entreprise.site_web || null
         }])
         .select()
         .single();
@@ -111,8 +126,18 @@ router.post('/demandes', async (req, res) => {
       prenom: p.prenom,
       email: p.email,
       telephone: p.telephone || null,
-      fonction: p.fonction || null
+      fonction: p.fonction || null,
+      date_naissance: p.date_naissance || null,
+      lieu_naissance: p.lieu_naissance || null,
+      adresse: p.adresse || null,
+      code_postal: p.code_postal || null,
+      ville: p.ville || null,
+      niveau_etudes: p.niveau_etudes || null,
+      situation_handicap: p.situation_handicap || false,
+      amenagements_necessaires: p.amenagements_necessaires || null
     }));
+
+    console.log('👥 Participants à insérer:', JSON.stringify(participantsData, null, 2));
 
     const { error: participantsError } = await supabase
       .from('participants')
@@ -140,9 +165,84 @@ router.post('/demandes', async (req, res) => {
       console.log('⚠️ Impossible de logger l\'action (table actions_log peut-être absente)');
     }
 
-    // 5. TODO: Envoyer les emails de confirmation
-    // - Email au client : "Votre demande a bien été reçue"
-    // - Email à l'organisme : "Nouvelle demande de formation"
+    // 5. Envoyer les emails de confirmation
+    console.log('📧 Envoi des emails de confirmation...');
+    
+    // Préparer les données pour l'email
+    const formationInfo = {
+      titre: sessionData.formation_titre || formation.titre || 'Formation demandée',
+      duree: formation.duree || 'À définir',
+      dates: formation.date_debut ? 
+        `${new Date(formation.date_debut).toLocaleDateString('fr-FR')}${formation.date_fin ? ' au ' + new Date(formation.date_fin).toLocaleDateString('fr-FR') : ''}` 
+        : 'Dates à définir',
+      modalite: formation.modalite || 'presentiel',
+      nombre_participants: participants.length
+    };
+
+    // Email au client (confirmation de demande)
+    try {
+      const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+      console.log('📧 Tentative d\'envoi email client vers:', entreprise.email_contact, 'depuis:', emailFrom);
+      const resultClient = await emailService.sendConfirmationDemande(
+        entreprise.email_contact,
+        entreprise.nom,
+        formationInfo,
+        emailFrom
+      );
+      console.log('📧 Résultat email client:', resultClient);
+      if (resultClient.success) {
+        console.log('✅ Email de confirmation envoyé au client:', entreprise.email_contact);
+      } else {
+        console.error('❌ Échec envoi email client:', resultClient.error);
+      }
+    } catch (emailError) {
+      console.error('⚠️ Erreur lors de l\'envoi de l\'email au client:', emailError.message);
+      // On ne bloque pas la réponse si l'email échoue
+    }
+
+    // Email à l'organisme (notification nouvelle demande)
+    try {
+      const emailOrganisme = process.env.EMAIL_ORGANISME || process.env.EMAIL_FROM || 'onboarding@resend.dev';
+      const emailFrom = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+      
+      console.log('📧 Tentative d\'envoi email organisme vers:', emailOrganisme, 'depuis:', emailFrom);
+      const resultOrganisme = await emailService.sendEmail(
+        emailOrganisme,
+        `🆕 Nouvelle demande de formation - ${entreprise.nom}`,
+        `
+          <h1>Nouvelle demande de formation reçue</h1>
+          <h2>Entreprise</h2>
+          <ul>
+            <li><strong>Nom :</strong> ${entreprise.nom}</li>
+            <li><strong>Email :</strong> ${entreprise.email_contact}</li>
+            <li><strong>Téléphone :</strong> ${entreprise.telephone || 'Non renseigné'}</li>
+            <li><strong>Ville :</strong> ${entreprise.ville || 'Non renseigné'}</li>
+          </ul>
+          <h2>Formation demandée</h2>
+          <ul>
+            <li><strong>Formation :</strong> ${formationInfo.titre}</li>
+            <li><strong>Dates souhaitées :</strong> ${formationInfo.dates}</li>
+            <li><strong>Modalité :</strong> ${formationInfo.modalite}</li>
+            <li><strong>Nombre de participants :</strong> ${formationInfo.nombre_participants}</li>
+          </ul>
+          <h2>Participants</h2>
+          <ul>
+            ${participants.map(p => `<li>${p.prenom} ${p.nom} - ${p.email}</li>`).join('')}
+          </ul>
+          <p><a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/sessions/${nouvelleSession.id}" style="background-color: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Voir la demande dans le dashboard</a></p>
+        `,
+        emailFrom
+      );
+      console.log('📧 Résultat email organisme:', resultOrganisme);
+      if (resultOrganisme.success) {
+        console.log('✅ Email de notification envoyé à l\'organisme:', emailOrganisme);
+      } else {
+        console.error('❌ Échec envoi email organisme:', resultOrganisme.error);
+      }
+    } catch (emailError) {
+      console.error('⚠️ Erreur lors de l\'envoi de l\'email à l\'organisme:', emailError.message);
+      // On ne bloque pas la réponse si l'email échoue
+    }
 
     res.status(201).json({
       success: true,
