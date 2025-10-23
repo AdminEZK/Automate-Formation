@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabaseService = require('../services/supabaseService');
+const pdfGenerator = require('../services/pdfGenerator');
 
 // Valider une demande
 router.post('/sessions/:id/validate', async (req, res) => {
@@ -22,8 +23,7 @@ router.post('/sessions/:id/validate', async (req, res) => {
 
     // Mettre à jour le statut
     const updatedSession = await supabaseService.updateSession(id, {
-      statut: 'en_attente',
-      demande_validee_le: new Date().toISOString()
+      statut: 'en_attente'
     });
 
     res.json({ success: true, session: updatedSession });
@@ -219,6 +219,77 @@ router.get('/entreprises/:id/sessions', async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la récupération des sessions:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des sessions' });
+  }
+});
+
+// Générer le programme de formation en PDF
+router.get('/sessions/:id/generate-programme', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Récupérer toutes les données nécessaires
+    const session = await supabaseService.getSessionById(id);
+    if (!session) {
+      return res.status(404).json({ error: 'Session non trouvée' });
+    }
+
+    // Préparer les données pour le PDF
+    const sessionData = {
+      session: session,
+      formation: {
+        titre: session.formation_titre,
+        duree: session.formation_duree || 35,
+        objectifs: session.formation_objectifs || 'Objectifs à définir',
+        programme: session.formation_programme || 'Programme à définir',
+        public_vise: session.formation_public_vise || 'Tout public',
+        prerequis: session.formation_prerequis || 'Aucun prérequis',
+        competences_visees: session.formation_competences_visees || '',
+        methodes_pedagogiques: session.formation_methodes_pedagogiques || 'Apports théoriques et pratiques',
+        moyens_pedagogiques: session.formation_moyens_pedagogiques || 'Supports de formation',
+        modalites_evaluation: session.formation_modalites_evaluation || 'Évaluation continue',
+        accessibilite_handicap: session.formation_accessibilite_handicap || 'Nous contacter pour toute demande spécifique',
+        delai_acces: session.formation_delai_acces || '2 semaines',
+        modalites_acces: session.formation_modalites_acces || 'Inscription en ligne',
+        prix_ht: session.formation_prix_ht || 0,
+        nature_action: 'Formation professionnelle continue'
+      },
+      entreprise: {
+        nom: session.entreprise_nom
+      },
+      formateur: {
+        nom: session.formateur_nom || 'À définir',
+        specialites: [],
+        experience: ''
+      },
+      organisme: {
+        nom: process.env.ORGANISME_NOM || 'Aladé Conseil',
+        adresse: process.env.ORGANISME_ADRESSE || '',
+        code_postal: process.env.ORGANISME_CODE_POSTAL || '',
+        ville: process.env.ORGANISME_VILLE || '',
+        siret: process.env.ORGANISME_SIRET || '',
+        numero_declaration_activite: process.env.ORGANISME_NDA || '',
+        telephone: process.env.ORGANISME_TELEPHONE || '',
+        email: process.env.ORGANISME_EMAIL || process.env.EMAIL_FROM || '',
+        logo_url: process.env.ORGANISME_LOGO_URL || '',
+        referent_handicap: process.env.ORGANISME_REFERENT_HANDICAP || ''
+      }
+    };
+
+    // Générer le PDF
+    const pdfBuffer = await pdfGenerator.generateProgrammeFormation(sessionData);
+
+    // Définir les en-têtes pour le téléchargement
+    const filename = `Programme_${session.formation_titre?.replace(/[^a-z0-9]/gi, '_')}_${session.entreprise_nom?.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    
+    res.send(pdfBuffer);
+    
+  } catch (error) {
+    console.error('Erreur lors de la génération du programme:', error);
+    res.status(500).json({ error: 'Erreur lors de la génération du programme', details: error.message });
   }
 });
 

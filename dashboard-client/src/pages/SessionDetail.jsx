@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Building2, Calendar, Mail, Phone, MapPin, Send, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar, Mail, Phone, MapPin, Send, CheckCircle, XCircle, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { StepBadge } from '../components/ui/StatusBadge';
@@ -82,6 +82,28 @@ export function SessionDetail() {
     }
   };
 
+  const handleDownloadProgramme = async () => {
+    try {
+      setActionLoading(true);
+      const response = await sessionsApi.downloadProgramme(id);
+      
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Programme_${session.formation_titre?.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la génération du programme');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,6 +158,17 @@ export function SessionDetail() {
                 {formatSessionNumber(session.id, session.session_created_at)}
               </h1>
               <p className="mt-2 text-xl text-gray-600">{session.formation_titre}</p>
+            </div>
+            <div>
+              <Button
+                onClick={handleDownloadProgramme}
+                disabled={actionLoading}
+                variant="outline"
+                size="md"
+              >
+                <Download className="w-4 h-4" />
+                Télécharger le programme
+              </Button>
             </div>
           </div>
 
@@ -284,11 +317,9 @@ export function SessionDetail() {
                       ) : (
                         <div>
                           <p className="font-medium text-green-600">✅ Demande validée</p>
-                          {session.demande_validee_le && (
-                            <p className="text-sm text-gray-500 mt-1">
-                              {formatDateTime(session.demande_validee_le)}
-                            </p>
-                          )}
+                          <p className="text-sm text-gray-500 mt-1">
+                            Statut : En attente d'envoi du devis
+                          </p>
                         </div>
                       )}
                     </div>
