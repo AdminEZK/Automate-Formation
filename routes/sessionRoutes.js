@@ -2,6 +2,37 @@ const express = require('express');
 const router = express.Router();
 const supabaseService = require('../services/supabaseService');
 
+// Valider une demande
+router.post('/sessions/:id/validate', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Vérifier que la session existe
+    const session = await supabaseService.getSessionById(id);
+    if (!session) {
+      return res.status(404).json({ error: 'Session non trouvée' });
+    }
+
+    // Vérifier que la session est au statut 'demande'
+    if (session.statut !== 'demande') {
+      return res.status(400).json({ 
+        error: 'Seules les demandes au statut "demande" peuvent être validées' 
+      });
+    }
+
+    // Mettre à jour le statut
+    const updatedSession = await supabaseService.updateSession(id, {
+      statut: 'en_attente',
+      demande_validee_le: new Date().toISOString()
+    });
+
+    res.json({ success: true, session: updatedSession });
+  } catch (error) {
+    console.error('Erreur lors de la validation de la demande:', error);
+    res.status(500).json({ error: 'Erreur lors de la validation' });
+  }
+});
+
 // Marquer le devis comme envoyé
 router.post('/sessions/:id/mark-devis-sent', async (req, res) => {
   try {

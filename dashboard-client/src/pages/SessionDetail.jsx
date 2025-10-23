@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Card'
 import { Button } from '../components/ui/Button';
 import { StepBadge } from '../components/ui/StatusBadge';
 import { sessionsApi, participantsApi } from '../lib/api';
-import { formatDate, formatSessionNumber, getModaliteLabel } from '../lib/utils';
+import { formatDate, formatDateTime, formatSessionNumber, getModaliteLabel } from '../lib/utils';
 
 export function SessionDetail() {
   const { id } = useParams();
@@ -43,6 +43,21 @@ export function SessionDetail() {
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de la mise à jour');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleValidateDemande = async () => {
+    if (!window.confirm('Confirmer la validation de cette demande ?')) return;
+
+    try {
+      setActionLoading(true);
+      await sessionsApi.validateDemande(id);
+      await loadSessionData();
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la validation');
     } finally {
       setActionLoading(false);
     }
@@ -234,14 +249,47 @@ export function SessionDetail() {
                   {/* Demande reçue */}
                   <div className="relative">
                     <div className="absolute -left-[33px] mt-1">
-                      <StepBadge status={getStepStatus('demande') === 'completed' ? 'completed' : 'pending'} />
+                      <StepBadge status="completed" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Demande reçue</p>
+                      <p className="font-medium text-green-600">✅ Demande reçue</p>
                       {session.created_at && (
                         <p className="text-sm text-gray-500 mt-1">
-                          {formatDate(session.created_at)} - Demande initiale enregistrée
+                          {formatDateTime(session.created_at)}
                         </p>
+                      )}
+                      {session.statut === 'demande' && (
+                        <p className="text-sm text-yellow-600 mt-2 font-medium">
+                          💡 Prochaine action : Valider la demande
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Validation demande */}
+                  <div className="relative">
+                    <div className="absolute -left-[33px] mt-1">
+                      <StepBadge status={
+                        session.statut === 'demande' ? 'pending' : 'completed'
+                      } />
+                    </div>
+                    <div>
+                      {session.statut === 'demande' ? (
+                        <div>
+                          <p className="font-medium text-gray-400">⏸️ Validation de la demande</p>
+                          <p className="text-sm text-gray-400 mt-1">
+                            En attente de votre validation
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="font-medium text-green-600">✅ Demande validée</p>
+                          {session.demande_validee_le && (
+                            <p className="text-sm text-gray-500 mt-1">
+                              {formatDateTime(session.demande_validee_le)}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -251,13 +299,36 @@ export function SessionDetail() {
                     <div className="absolute -left-[33px] mt-1">
                       <StepBadge status={
                         session.statut === 'demande' ? 'pending' :
+                        session.statut === 'en_attente' && !session.devis_envoye_le ? 'in_progress' :
                         session.statut === 'devis_envoye' ? 'in_progress' : 'completed'
                       } />
                     </div>
                     <div>
                       {session.statut === 'demande' && (
                         <div>
+                          <p className="font-medium text-yellow-600">⏳ Demande à valider</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Validez cette demande avant d'envoyer le devis
+                          </p>
+                          <Button
+                            onClick={handleValidateDemande}
+                            disabled={actionLoading}
+                            variant="primary"
+                            size="sm"
+                            className="mt-2"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            Valider la demande
+                          </Button>
+                        </div>
+                      )}
+
+                      {session.statut === 'en_attente' && !session.devis_envoye_le && (
+                        <div>
                           <p className="font-medium text-yellow-600">⏳ Devis à envoyer</p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Envoyez le devis par email, puis marquez-le comme envoyé
+                          </p>
                           <Button
                             onClick={handleMarkDevisSent}
                             disabled={actionLoading}
@@ -276,13 +347,13 @@ export function SessionDetail() {
                           <p className="font-medium text-green-600">✅ Devis envoyé</p>
                           {session.devis_envoye_le && (
                             <p className="text-sm text-gray-500 mt-1">
-                              {formatDate(session.devis_envoye_le)} - Devis envoyé via Outlook
+                              {formatDateTime(session.devis_envoye_le)}
                             </p>
                           )}
                           
                           <div className="mt-3">
                             <p className="text-yellow-600 font-medium mb-2">
-                              ⏳ En attente d'acceptation du client
+                              ⏳ En attente de la réponse du client
                             </p>
                             <div className="flex gap-3">
                               <Button
@@ -308,12 +379,12 @@ export function SessionDetail() {
                         </div>
                       )}
 
-                      {['en_attente', 'confirmee', 'convoquee', 'en_cours', 'terminee'].includes(session.statut) && (
+                      {['en_attente', 'confirmee', 'convoquee', 'en_cours', 'terminee'].includes(session.statut) && session.devis_envoye_le && (
                         <div>
                           <p className="font-medium text-green-600">✅ Devis accepté par le client</p>
                           {session.devis_accepte_le && (
                             <p className="text-sm text-gray-500 mt-1">
-                              {formatDate(session.devis_accepte_le)}
+                              {formatDateTime(session.devis_accepte_le)}
                             </p>
                           )}
                         </div>
@@ -324,7 +395,7 @@ export function SessionDetail() {
                           <p className="font-semibold text-red-600">❌ Devis refusé par le client</p>
                           {session.devis_refuse_le && (
                             <p className="text-sm text-red-600 mt-1">
-                              {formatDate(session.devis_refuse_le)}
+                              {formatDateTime(session.devis_refuse_le)}
                             </p>
                           )}
                         </div>
@@ -359,7 +430,7 @@ export function SessionDetail() {
                             <p className="font-medium text-green-600">✅ Convention signée</p>
                             {session.convention_signee_le && (
                               <p className="text-sm text-gray-500 mt-1">
-                                {formatDate(session.convention_signee_le)}
+                                {formatDateTime(session.convention_signee_le)}
                               </p>
                             )}
                           </div>

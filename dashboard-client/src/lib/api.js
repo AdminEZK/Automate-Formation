@@ -22,6 +22,9 @@ export const sessionsApi = {
   // Récupérer une session par ID
   getById: (id) => api.get(`/sessions/${id}`),
 
+  // Valider une demande
+  validateDemande: (id) => api.post(`/sessions/${id}/validate`),
+
   // Marquer le devis comme envoyé
   markDevisSent: (id) => api.post(`/sessions/${id}/mark-devis-sent`),
 

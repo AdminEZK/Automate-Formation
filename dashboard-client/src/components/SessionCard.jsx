@@ -6,6 +6,32 @@ import { formatDate, formatSessionNumber, getModaliteLabel } from '../lib/utils'
 export function SessionCard({ session }) {
   const navigate = useNavigate();
 
+  // Déterminer l'action requise
+  const getActionRequired = () => {
+    if (session.statut === 'demande') {
+      return { text: '🆕 Nouvelle demande - À valider', color: 'bg-blue-100 text-blue-800 border-blue-200' };
+    }
+    if (session.statut === 'en_attente' && !session.devis_envoye_le) {
+      return { text: '📧 Devis à envoyer', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+    }
+    if (session.statut === 'devis_envoye') {
+      const daysSince = Math.floor((new Date() - new Date(session.devis_envoye_le)) / (1000 * 60 * 60 * 24));
+      if (daysSince >= 3) {
+        return { text: `⚠️ Devis envoyé il y a ${daysSince} jours - Relancer ?`, color: 'bg-orange-100 text-orange-800 border-orange-200' };
+      }
+      return { text: '⏳ En attente de réponse du client', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+    }
+    if (session.statut === 'en_attente' && session.devis_envoye_le) {
+      return { text: '📝 Convention à envoyer', color: 'bg-purple-100 text-purple-800 border-purple-200' };
+    }
+    if (session.statut === 'confirmee') {
+      return { text: '✅ Confirmée - Convocations à envoyer', color: 'bg-green-100 text-green-800 border-green-200' };
+    }
+    return null;
+  };
+
+  const actionRequired = getActionRequired();
+
   // Déterminer les statuts des étapes
   const getStepStatus = (step) => {
     const statusOrder = ['demande', 'devis_envoye', 'en_attente', 'confirmee', 'convoquee', 'en_cours', 'terminee'];
@@ -45,6 +71,13 @@ export function SessionCard({ session }) {
     >
       <CardContent className="p-6">
         <div className="space-y-4">
+          {/* Alerte d'action requise */}
+          {actionRequired && (
+            <div className={`px-3 py-2 rounded-lg border ${actionRequired.color} text-sm font-medium`}>
+              {actionRequired.text}
+            </div>
+          )}
+
           {/* En-tête */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
