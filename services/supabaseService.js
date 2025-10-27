@@ -420,4 +420,7 @@ class SupabaseService {
   }
 }
 
-module.exports = new SupabaseService();
+const supabaseServiceInstance = new SupabaseService();
+supabaseServiceInstance.supabase = supabase; // Exposer le client supabase
+
+module.exports = supabaseServiceInstance;

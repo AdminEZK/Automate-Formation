@@ -22,6 +22,8 @@ const formationRoutes = require('./routes/formationRoutes');
 const sessionRoutes = require('./routes/sessionRoutes');
 const entrepriseRoutes = require('./routes/entrepriseRoutes');
 const demandeRoutes = require('./routes/demandeRoutes');
+const formateurRoutes = require('./routes/formateurRoutes');
+const documentRoutes = require('./routes/documentRoutes');
 const emailService = require('./services/emailService');
 
 const app = express();
@@ -77,6 +79,8 @@ app.use('/api', formationRoutes);
 app.use('/api', sessionRoutes);
 app.use('/api', entrepriseRoutes);
 app.use('/api', demandeRoutes);
+app.use('/api', formateurRoutes);
+app.use('/api/documents', documentRoutes);
 
 // Route pour tester l'envoi d'email
 app.get('/api/test-email', async (req, res) => {
