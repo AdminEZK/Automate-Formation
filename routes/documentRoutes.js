@@ -399,4 +399,331 @@ router.get('/download/:filename', async (req, res) => {
   }
 });
 
+/**
+ * ============================================
+ * NOUVELLES ROUTES : GÉNÉRATION PAR PHASE
+ * ============================================
+ */
+
+/**
+ * PHASE 2 : Générer proposition + programme
+ * POST /api/documents/phase/proposition/:sessionId
+ */
+router.post('/phase/proposition/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_proposition',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Proposition et programme générés',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase proposition:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 3 : Générer convention
+ * POST /api/documents/phase/convention/:sessionId
+ */
+router.post('/phase/convention/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_convention',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Convention générée',
+        filePath: result.filePath
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase convention:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 4 : Générer questionnaires préalables (J-7)
+ * POST /api/documents/phase/preparation/:sessionId
+ */
+router.post('/phase/preparation/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_preparation',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Questionnaires préalables générés',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase préparation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 5 : Générer convocations + feuilles émargement (J-4)
+ * POST /api/documents/phase/convocation/:sessionId
+ */
+router.post('/phase/convocation/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_convocation',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Convocations et feuilles d\'émargement générées',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase convocation:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 7 : Générer évaluations à chaud (Fin formation)
+ * POST /api/documents/phase/evaluation-chaud/:sessionId
+ */
+router.post('/phase/evaluation-chaud/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_evaluation_chaud',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Évaluations à chaud générées',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase évaluation chaud:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 9 : Générer certificats + évaluation client (J+2)
+ * POST /api/documents/phase/cloture/:sessionId
+ */
+router.post('/phase/cloture/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_cloture',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Certificats et évaluation client générés',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase clôture:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PHASE 10 : Générer évaluations à froid (J+60)
+ * POST /api/documents/phase/evaluation-froid/:sessionId
+ */
+router.post('/phase/evaluation-froid/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_phase_evaluation_froid',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Évaluations à froid générées',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur phase évaluation froid:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Liste des documents générés pour une session
+ * GET /api/documents/session/:sessionId
+ */
+router.get('/session/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const documentsDir = path.join(__dirname, '..', 'generated_documents', `session_${sessionId}`);
+    
+    try {
+      const files = await fs.readdir(documentsDir, { withFileTypes: true });
+      const documents = files
+        .filter(file => file.isFile())
+        .map(file => ({
+          name: file.name,
+          path: `/api/documents/download/${sessionId}/${file.name}`,
+          size: 0, // À calculer si nécessaire
+          createdAt: new Date() // À récupérer depuis les stats du fichier
+        }));
+      
+      res.status(200).json({
+        success: true,
+        documents
+      });
+    } catch (error) {
+      // Dossier n'existe pas encore
+      res.status(200).json({
+        success: true,
+        documents: []
+      });
+    }
+  } catch (error) {
+    console.error('Erreur liste documents:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Télécharger un document généré
+ * GET /api/documents/download/:sessionId/:filename
+ */
+router.get('/download/:sessionId/:filename', async (req, res) => {
+  try {
+    const { sessionId, filename } = req.params;
+    const filePath = path.join(__dirname, '..', 'generated_documents', `session_${sessionId}`, filename);
+    
+    try {
+      await fs.access(filePath);
+      res.download(filePath, filename);
+    } catch (error) {
+      res.status(404).json({
+        success: false,
+        message: 'Fichier non trouvé'
+      });
+    }
+  } catch (error) {
+    console.error('Erreur téléchargement:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

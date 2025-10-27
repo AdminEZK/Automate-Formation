@@ -819,5 +819,231 @@ Ce système automatisé transforme complètement la gestion des formations en :
 
 ---
 
+## 📋 ANNEXE : WORKFLOW COMPLET DES DOCUMENTS PAR PHASE
+
+### **AVANT LA FORMATION** 📝
+
+#### **PHASE 1 : DEMANDE (Jour J)**
+**Destinataire :** Client (Responsable Formation)
+- ✅ **Email de confirmation** - Immédiat
+  - Accusé de réception de la demande
+  - Délai de réponse annoncé
+
+#### **PHASE 2 : PROPOSITION COMMERCIALE (J+1)**
+**Destinataire :** Client
+- 📄 **Proposition de formation (Devis)** - Généré manuellement par l'OF
+- 📄 **Programme de formation** - Généré automatiquement
+- ✅ **Email avec proposition** - Envoyé par l'OF
+
+#### **PHASE 3 : CONTRACTUALISATION (J+3)**
+**Destinataire :** Client
+- 📄 **Convention de formation** - Générée automatiquement
+- ✅ **Email demande signature** - Via Yousign
+- ✅ **Email confirmation signature** - Après signature
+
+#### **PHASE 4 : PRÉPARATION (J-7)**
+**Destinataires :** Participants
+- 📄 **Questionnaire préalable** - 1 par participant
+- ✅ **Email avec questionnaire** - 1 par participant
+
+#### **PHASE 5 : CONVOCATION (J-4)**
+**Destinataires :** Participants
+- 📄 **Convocation personnalisée** - 1 par participant
+- 📄 **Règlement intérieur** - Commun
+- 📄 **CV du formateur** - Commun
+- 📄 **Planning détaillé** - Commun
+- ✅ **Email convocation** - 1 par participant avec 4 PJ
+
+**Destinataire :** Organisme de Formation
+- 📄 **Feuille d'émargement entreprise** - Pour toute la session
+- 📄 **Feuille d'émargement individuelle** - 1 par participant
+
+---
+
+### **PENDANT LA FORMATION** 🎓
+
+#### **PHASE 6 : JOUR DE FORMATION (Jour J)**
+**Destinataire :** Formateur
+- 📄 **Feuilles d'émargement** - À faire signer (matin + après-midi)
+- **Action :** Upload des émargements signés
+
+---
+
+### **APRÈS LA FORMATION** ✅
+
+#### **PHASE 7 : ÉVALUATION À CHAUD (Fin Jour J)**
+**Destinataires :** Participants
+- 📄 **Évaluation à chaud** - 1 par participant
+- ✅ **Email avec formulaire** - Immédiat fin formation
+
+#### **PHASE 8 : BILAN FORMATEUR (J+1)**
+**Destinataire :** Formateur
+- 📄 **Questionnaire formateur**
+- ✅ **Email avec formulaire**
+
+#### **PHASE 9 : CERTIFICAT & CLÔTURE (J+2)**
+**Destinataires :** Participants
+- 📄 **Certificat de réalisation** - 1 par participant
+- ✅ **Email avec certificat PDF**
+
+**Destinataire :** Client (Responsable Formation)
+- 📄 **Évaluation satisfaction client**
+- ✅ **Email avec formulaire**
+
+#### **PHASE 10 : ÉVALUATION À FROID (J+60)**
+**Destinataires :** Participants
+- 📄 **Évaluation à froid** - 1 par participant
+- ✅ **Email avec formulaire** - 60 jours après
+
+#### **PHASE 11 : ÉVALUATION OPCO (Si financement)**
+**Destinataire :** OPCO
+- 📄 **Évaluation OPCO**
+- 📦 **Dossier complet** avec tous les documents
+- ✅ **Email avec dossier**
+
+---
+
+## 📊 RÉCAPITULATIF PAR DESTINATAIRE
+
+### **👥 PARTICIPANTS (N personnes)**
+| Timing | Document | Email |
+|--------|----------|-------|
+| J-7 | Questionnaire préalable | ✅ |
+| J-4 | Convocation + Règlement + CV + Planning | ✅ |
+| Fin J | Évaluation à chaud | ✅ |
+| J+2 | Certificat de réalisation | ✅ |
+| J+60 | Évaluation à froid | ✅ |
+
+**Total par participant : 5 documents + 5 emails**
+
+---
+
+### **👨‍🏫 FORMATEUR (1 personne)**
+| Timing | Document | Email |
+|--------|----------|-------|
+| J-4 | Feuilles émargement (reçues par l'OF) | - |
+| J+1 | Questionnaire formateur | ✅ |
+
+**Total formateur : 1 document + 1 email**
+
+---
+
+### **🏢 CLIENT / ENTREPRISE (1 responsable)**
+| Timing | Document | Email |
+|--------|----------|-------|
+| J | Confirmation demande | ✅ |
+| J+1 | Proposition + Programme | ✅ |
+| J+3 | Convention (signature) | ✅ |
+| J+3 | Confirmation signature | ✅ |
+| J+2 | Évaluation satisfaction | ✅ |
+
+**Total client : 3 documents + 5 emails**
+
+---
+
+### **💼 OPCO (Si financement)**
+| Timing | Document | Email |
+|--------|----------|-------|
+| Après formation | Dossier complet + Évaluation OPCO | ✅ |
+
+**Total OPCO : Dossier complet + 1 email**
+
+---
+
+### **📁 ORGANISME DE FORMATION (Vous)**
+| Timing | Document | Utilisation |
+|--------|----------|-------------|
+| J+1 | Proposition (manuel) | Envoi client |
+| J+1 | Programme (auto) | Envoi client |
+| J+3 | Convention (auto) | Signature |
+| J-4 | Feuilles émargement | Formation |
+| Après | Tous documents | Archivage Qualiopi |
+
+---
+
+## 🎯 DOCUMENTS PAR CATÉGORIE
+
+### **📄 Documents de Session (Communs)**
+1. Proposition de formation (Devis)
+2. Programme de formation
+3. Convention de formation
+4. Feuille d'émargement entreprise
+5. Règlement intérieur
+
+### **👤 Documents Individuels (Par participant)**
+6. Convocation
+7. Questionnaire préalable
+8. Feuille d'émargement individuelle
+9. Évaluation à chaud
+10. Certificat de réalisation
+11. Évaluation à froid
+
+### **👨‍🏫 Documents Formateur**
+12. Questionnaire formateur
+13. Contrat formateur
+14. Déroulé pédagogique
+
+### **💼 Documents Administratifs**
+15. Évaluation satisfaction client
+16. Évaluation OPCO
+17. Bulletin d'inscription
+18. Grille MAJ compétences
+19. Traitement réclamations
+
+---
+
+## 📈 STATISTIQUES GLOBALES
+
+### Par Session de Formation
+
+**Documents générés** :
+- Documents communs : 5
+- Documents par participant : 6 × N participants
+- Documents formateur : 1
+- Documents administratifs : 2-4
+
+**Exemple pour 10 participants** :
+- Total documents : **5 + (6 × 10) + 1 + 3 = 69 documents**
+
+**Emails envoyés** :
+- Emails participants : 5 × N participants
+- Emails client : 5
+- Emails formateur : 1
+- Emails OPCO : 0-1
+
+**Exemple pour 10 participants** :
+- Total emails : **(5 × 10) + 5 + 1 + 1 = 57 emails**
+
+---
+
+## ⏱️ TIMELINE COMPLÈTE
+
+```
+J-7  ────► Questionnaire préalable (Participants)
+J-4  ────► Convocation + Documents (Participants)
+J-3  ────► Convention signature (Client)
+J    ────► Formation + Émargements
+J    ────► Évaluation à chaud (Participants)
+J+1  ────► Questionnaire formateur
+J+2  ────► Certificats + Évaluation client
+J+60 ────► Évaluation à froid (Participants)
+J+90 ────► Archivage automatique
+```
+
+---
+
+## 🎯 OBJECTIF INTERFACE DE GÉNÉRATION
+
+L'interface doit permettre de :
+
+1. **Générer les documents par phase** avec un seul clic
+2. **Envoyer automatiquement les emails** au bon moment
+3. **Suivre l'état d'avancement** de chaque phase
+4. **Télécharger les documents** générés
+5. **Archiver automatiquement** après la formation
+
+---
+
 **Document créé le 8 octobre 2025**  
-**Version 1.0 - Draft**
+**Mis à jour le 27 octobre 2025**  
+**Version 1.1 - Draft**

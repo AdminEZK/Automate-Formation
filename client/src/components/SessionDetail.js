@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Spinner, Alert, ListGroup, Tabs, Tab } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import sessionService from '../services/sessionService';
+import DocumentGeneratorByPhase from './DocumentGeneratorByPhase';
 
 const SessionDetail = () => {
   const { id } = useParams();
@@ -154,47 +155,55 @@ const SessionDetail = () => {
 
       <Row>
         <Col md={8}>
-          <Card className="mb-4">
-            <Card.Header>
-              <h5 className="mb-0">Informations générales</h5>
-            </Card.Header>
-            <Card.Body>
-              <Row>
-                <Col md={6}>
-                  <p><strong>Entreprise:</strong> {session.nom_entreprise || 'N/A'}</p>
-                  <p><strong>Formation:</strong> {session.titre_formation || 'N/A'}</p>
-                  <p><strong>Statut:</strong> {renderCurrentStatus()}</p>
-                </Col>
-                <Col md={6}>
-                  <p><strong>Date de début:</strong> {formatDate(session.date_debut)}</p>
-                  <p><strong>Date de fin:</strong> {formatDate(session.date_fin)}</p>
-                  <p><strong>Nombre de participants:</strong> {session.nombre_participants || 0}</p>
-                </Col>
-              </Row>
-              
-              <hr />
-              
-              <h6>Changer le statut:</h6>
-              {updating ? (
-                <div className="text-center my-2">
-                  <Spinner animation="border" size="sm" />
-                </div>
-              ) : (
-                renderStatusButtons()
-              )}
-            </Card.Body>
-          </Card>
+          <Tabs defaultActiveKey="info" className="mb-3">
+            <Tab eventKey="info" title="📋 Informations">
+              <Card className="mb-4">
+                <Card.Header>
+                  <h5 className="mb-0">Informations générales</h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row>
+                    <Col md={6}>
+                      <p><strong>Entreprise:</strong> {session.nom_entreprise || 'N/A'}</p>
+                      <p><strong>Formation:</strong> {session.titre_formation || 'N/A'}</p>
+                      <p><strong>Statut:</strong> {renderCurrentStatus()}</p>
+                    </Col>
+                    <Col md={6}>
+                      <p><strong>Date de début:</strong> {formatDate(session.date_debut)}</p>
+                      <p><strong>Date de fin:</strong> {formatDate(session.date_fin)}</p>
+                      <p><strong>Nombre de participants:</strong> {session.nombre_participants || 0}</p>
+                    </Col>
+                  </Row>
+                  
+                  <hr />
+                  
+                  <h6>Changer le statut:</h6>
+                  {updating ? (
+                    <div className="text-center my-2">
+                      <Spinner animation="border" size="sm" />
+                    </div>
+                  ) : (
+                    renderStatusButtons()
+                  )}
+                </Card.Body>
+              </Card>
 
-          {session.description && (
-            <Card className="mb-4">
-              <Card.Header>
-                <h5 className="mb-0">Description</h5>
-              </Card.Header>
-              <Card.Body>
-                <p>{session.description}</p>
-              </Card.Body>
-            </Card>
-          )}
+              {session.description && (
+                <Card className="mb-4">
+                  <Card.Header>
+                    <h5 className="mb-0">Description</h5>
+                  </Card.Header>
+                  <Card.Body>
+                    <p>{session.description}</p>
+                  </Card.Body>
+                </Card>
+              )}
+            </Tab>
+
+            <Tab eventKey="documents" title="📄 Documents">
+              <DocumentGeneratorByPhase sessionId={id} />
+            </Tab>
+          </Tabs>
         </Col>
 
         <Col md={4}>

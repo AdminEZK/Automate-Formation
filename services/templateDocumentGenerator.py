@@ -532,16 +532,234 @@ class TemplateDocumentGenerator:
         except Exception as e:
             print(f"Erreur lors de la génération des documents: {str(e)}")
             raise
-
-
-# ============================================
-# EXEMPLE D'UTILISATION
-# ============================================
+    
+    # ============================================
+    # MÉTHODES DE GÉNÉRATION PAR PHASE
+    # ============================================
+    
+    def generer_phase_proposition(self, session_id):
+        """
+        PHASE 2 : Génère la proposition et le programme (J+1)
+        """
+        documents = []
+        
+        # Proposition de formation
+        try:
+            proposition = self.generer_proposition(session_id)
+            documents.append({
+                'type': 'proposition',
+                'path': proposition,
+                'name': 'Proposition de formation'
+            })
+        except Exception as e:
+            print(f"Erreur génération proposition: {e}")
+        
+        # Programme de formation
+        try:
+            programme = self.generer_programme(session_id)
+            documents.append({
+                'type': 'programme',
+                'path': programme,
+                'name': 'Programme de formation'
+            })
+        except Exception as e:
+            print(f"Erreur génération programme: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'proposition',
+            'count': len(documents)
+        }
+    
+    def generer_phase_preparation(self, session_id):
+        """
+        PHASE 4 : Génère les questionnaires préalables (J-7)
+        """
+        documents = []
+        
+        # Récupérer les participants
+        participants = self.get_participants_data(session_id)
+        
+        for participant in participants:
+            try:
+                questionnaire = self.generer_questionnaire_prealable(session_id, participant['id'])
+                documents.append({
+                    'type': 'questionnaire_prealable',
+                    'path': questionnaire,
+                    'name': f"Questionnaire préalable - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération questionnaire pour {participant['nom']}: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'preparation',
+            'count': len(documents)
+        }
+    
+    def generer_phase_convocation(self, session_id):
+        """
+        PHASE 5 : Génère les convocations et feuilles d'émargement (J-4)
+        """
+        documents = []
+        
+        # Récupérer les participants
+        participants = self.get_participants_data(session_id)
+        
+        # Convocations individuelles
+        for participant in participants:
+            try:
+                convocation = self.generer_convocation(session_id, participant['id'])
+                documents.append({
+                    'type': 'convocation',
+                    'path': convocation,
+                    'name': f"Convocation - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération convocation pour {participant['nom']}: {e}")
+        
+        # Règlement intérieur (commun)
+        try:
+            reglement = self.generer_reglement_interieur(session_id)
+            documents.append({
+                'type': 'reglement_interieur',
+                'path': reglement,
+                'name': 'Règlement intérieur'
+            })
+        except Exception as e:
+            print(f"Erreur génération règlement: {e}")
+        
+        # Feuille d'émargement entreprise
+        try:
+            emargement_entreprise = self.generer_feuille_emargement_entreprise(session_id)
+            documents.append({
+                'type': 'emargement_entreprise',
+                'path': emargement_entreprise,
+                'name': 'Feuille d\'émargement entreprise'
+            })
+        except Exception as e:
+            print(f"Erreur génération émargement entreprise: {e}")
+        
+        # Feuilles d'émargement individuelles
+        for participant in participants:
+            try:
+                emargement = self.generer_feuille_emargement_individuelle(session_id, participant['id'])
+                documents.append({
+                    'type': 'emargement_individuel',
+                    'path': emargement,
+                    'name': f"Feuille d\'émargement - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération émargement pour {participant['nom']}: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'convocation',
+            'count': len(documents)
+        }
+    
+    def generer_phase_evaluation_chaud(self, session_id):
+        """
+        PHASE 7 : Génère les évaluations à chaud (Fin formation)
+        """
+        documents = []
+        
+        # Récupérer les participants
+        participants = self.get_participants_data(session_id)
+        
+        for participant in participants:
+            try:
+                evaluation = self.generer_evaluation_chaud(session_id, participant['id'])
+                documents.append({
+                    'type': 'evaluation_chaud',
+                    'path': evaluation,
+                    'name': f"Évaluation à chaud - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération évaluation chaud pour {participant['nom']}: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'evaluation_chaud',
+            'count': len(documents)
+        }
+    
+    def generer_phase_cloture(self, session_id):
+        """
+        PHASE 9 : Génère les certificats et l'évaluation client (J+2)
+        """
+        documents = []
+        
+        # Récupérer les participants
+        participants = self.get_participants_data(session_id)
+        
+        # Certificats individuels
+        for participant in participants:
+            try:
+                certificat = self.generer_certificat(session_id, participant['id'])
+                documents.append({
+                    'type': 'certificat',
+                    'path': certificat,
+                    'name': f"Certificat - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération certificat pour {participant['nom']}: {e}")
+        
+        # Évaluation satisfaction client
+        try:
+            evaluation_client = self.generer_evaluation_client(session_id)
+            documents.append({
+                'type': 'evaluation_client',
+                'path': evaluation_client,
+                'name': 'Évaluation satisfaction client'
+            })
+        except Exception as e:
+            print(f"Erreur génération évaluation client: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'cloture',
+            'count': len(documents)
+        }
+    
+    def generer_phase_evaluation_froid(self, session_id):
+        """
+        PHASE 10 : Génère les évaluations à froid (J+60)
+        """
+        documents = []
+        
+        # Récupérer les participants
+        participants = self.get_participants_data(session_id)
+        
+        for participant in participants:
+            try:
+                evaluation = self.generer_evaluation_froid(session_id, participant['id'])
+                documents.append({
+                    'type': 'evaluation_froid',
+                    'path': evaluation,
+                    'name': f"Évaluation à froid - {participant['prenom']} {participant['nom']}"
+                })
+            except Exception as e:
+                print(f"Erreur génération évaluation froid pour {participant['nom']}: {e}")
+        
+        return {
+            'success': True,
+            'documents': documents,
+            'phase': 'evaluation_froid',
+            'count': len(documents)
+        }
 
 if __name__ == "__main__":
     from supabase import create_client
     import os
     from dotenv import load_dotenv
+    import sys
+    import json
     
     load_dotenv()
     
@@ -554,9 +772,40 @@ if __name__ == "__main__":
     # Créer le générateur
     generator = TemplateDocumentGenerator(supabase)
     
-    # Générer tous les documents pour une session
-    session_id = "votre-session-id"
-    documents = generator.generer_tous_documents_session(session_id)
+    # Gestion des arguments en ligne de commande
+    if len(sys.argv) > 1:
+        method_name = sys.argv[1]
+        session_id = sys.argv[2] if len(sys.argv) > 2 else None
+        participant_id = sys.argv[3] if len(sys.argv) > 3 else None
+        
+        # Appeler la méthode demandée
+        if hasattr(generator, method_name):
+            method = getattr(generator, method_name)
+            
+            try:
+                if participant_id:
+                    result = method(session_id, participant_id)
+                elif session_id:
+                    result = method(session_id)
+                else:
+                    result = method()
+                
+                # Retourner le résultat en JSON
+                print(json.dumps(result))
+            except Exception as e:
+                print(json.dumps({
+                    'success': False,
+                    'error': str(e)
+                }))
+        else:
+            print(json.dumps({
+                'success': False,
+                'error': f'Méthode {method_name} non trouvée'
+            }))
+    else:
+        # Mode test par défaut
+        session_id = "votre-session-id"
+        documents = generator.generer_tous_documents_session(session_id)
     
     print("Documents générés:")
     for type_doc, fichiers in documents.items():
