@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const supabaseService = require('../services/supabaseService');
-const pdfGenerator = require('../services/pdfGenerator');
+// const pdfGenerator = require('../services/pdfGenerator'); // Désactivé - On utilise Python pour générer les documents Word
 
 // Valider une demande
 router.post('/sessions/:id/validate', async (req, res) => {
@@ -275,17 +275,12 @@ router.get('/sessions/:id/generate-programme', async (req, res) => {
       }
     };
 
-    // Générer le PDF
-    const pdfBuffer = await pdfGenerator.generateProgrammeFormation(sessionData);
-
-    // Définir les en-têtes pour le téléchargement
-    const filename = `Programme_${session.formation_titre?.replace(/[^a-z0-9]/gi, '_')}_${session.entreprise_nom?.replace(/[^a-z0-9]/gi, '_')}.pdf`;
-    
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', pdfBuffer.length);
-    
-    res.send(pdfBuffer);
+    // DÉSACTIVÉ - On utilise maintenant Python pour générer les documents Word
+    // Utilisez la nouvelle route: POST /api/documents/phase/proposition/:sessionId
+    res.status(501).json({ 
+      error: 'Cette route est désactivée',
+      message: 'Utilisez la nouvelle route: POST /api/documents/phase/proposition/:sessionId pour générer les documents'
+    });
     
   } catch (error) {
     console.error('Erreur lors de la génération du programme:', error);
