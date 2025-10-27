@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const documentService = require('../services/documentService');
 const emailService = require('../services/emailService');
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs').promises;
 
 /**
  * Route pour générer et envoyer une convocation par email
@@ -183,6 +186,214 @@ router.post('/send-certificate', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur serveur lors de la génération et de l\'envoi du certificat',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Helper function pour appeler le script Python de génération
+ */
+async function callPythonGenerator(scriptName, args) {
+  return new Promise((resolve, reject) => {
+    const pythonPath = process.env.PYTHON_PATH || 'python3';
+    const scriptPath = path.join(__dirname, '..', 'services', scriptName);
+    
+    const pythonProcess = spawn(pythonPath, [scriptPath, ...args]);
+    
+    let stdout = '';
+    let stderr = '';
+    
+    pythonProcess.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+    
+    pythonProcess.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+    
+    pythonProcess.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Python script exited with code ${code}: ${stderr}`));
+      } else {
+        try {
+          const result = JSON.parse(stdout);
+          resolve(result);
+        } catch (e) {
+          resolve({ success: true, output: stdout });
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Générer un document spécifique depuis un template Word
+ */
+router.post('/generate/:documentType', async (req, res) => {
+  try {
+    const { documentType } = req.params;
+    const { sessionId, participantId } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        message: 'sessionId est requis'
+      });
+    }
+    
+    // Mapper les types de documents aux méthodes Python
+    const documentTypeMap = {
+      'convention': 'generer_convention',
+      'programme': 'generer_programme',
+      'proposition': 'generer_proposition',
+      'convocation': 'generer_convocation',
+      'certificat': 'generer_certificat',
+      'emargement_entreprise': 'generer_feuille_emargement_entreprise',
+      'emargement_individuel': 'generer_feuille_emargement_individuelle',
+      'questionnaire_prealable': 'generer_questionnaire_prealable',
+      'evaluation_chaud': 'generer_evaluation_chaud',
+      'evaluation_froid': 'generer_evaluation_froid',
+      'evaluation_client': 'generer_evaluation_client',
+      'reglement_interieur': 'generer_reglement_interieur',
+      'bulletin_inscription': 'generer_bulletin_inscription',
+      'grille_competences': 'generer_grille_competences',
+      'contrat_formateur': 'generer_contrat_formateur',
+      'deroule_pedagogique': 'generer_deroule_pedagogique',
+      'questionnaire_formateur': 'generer_questionnaire_formateur',
+      'evaluation_opco': 'generer_evaluation_opco',
+      'traitement_reclamations': 'generer_traitement_reclamations'
+    };
+    
+    const methodName = documentTypeMap[documentType];
+    if (!methodName) {
+      return res.status(400).json({
+        success: false,
+        message: `Type de document non reconnu: ${documentType}`
+      });
+    }
+    
+    // Vérifier si participantId est requis pour ce type de document
+    const requiresParticipant = [
+      'convocation', 'certificat', 'emargement_individuel', 
+      'questionnaire_prealable', 'evaluation_chaud', 'evaluation_froid',
+      'bulletin_inscription', 'grille_competences'
+    ];
+    
+    if (requiresParticipant.includes(documentType) && !participantId) {
+      return res.status(400).json({
+        success: false,
+        message: `participantId est requis pour le type de document: ${documentType}`
+      });
+    }
+    
+    // Appeler le script Python
+    const args = [methodName, sessionId];
+    if (participantId) {
+      args.push(participantId);
+    }
+    
+    const result = await callPythonGenerator('templateDocumentGenerator.py', args);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Document généré avec succès',
+        filePath: result.filePath
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération du document',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la génération du document:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors de la génération du document',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Générer tous les documents pour une session
+ */
+router.post('/generate-all/:sessionId', async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        message: 'sessionId est requis'
+      });
+    }
+    
+    // Appeler le script Python pour générer tous les documents
+    const result = await callPythonGenerator('templateDocumentGenerator.py', [
+      'generer_tous_documents_session',
+      sessionId
+    ]);
+    
+    if (result.success) {
+      res.status(200).json({
+        success: true,
+        message: 'Tous les documents ont été générés avec succès',
+        documents: result.documents
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Erreur lors de la génération des documents',
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Erreur lors de la génération de tous les documents:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors de la génération des documents',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Télécharger un document généré
+ */
+router.get('/download/:filename', async (req, res) => {
+  try {
+    const { filename } = req.params;
+    const filePath = path.join(__dirname, '..', 'generated_documents', filename);
+    
+    // Vérifier que le fichier existe
+    try {
+      await fs.access(filePath);
+    } catch (error) {
+      return res.status(404).json({
+        success: false,
+        message: 'Fichier non trouvé'
+      });
+    }
+    
+    // Envoyer le fichier
+    res.download(filePath, filename, (err) => {
+      if (err) {
+        console.error('Erreur lors du téléchargement:', err);
+        res.status(500).json({
+          success: false,
+          message: 'Erreur lors du téléchargement du fichier'
+        });
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors du téléchargement:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur serveur lors du téléchargement',
       error: error.message
     });
   }

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programme de Formation</title>
+    <style>
+        @page {
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #2563eb;
+            font-size: 28px;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+        
+        .info-box {
+            background-color: #f3f4f6;
+            border-left: 4px solid #2563eb;
+            padding: 15px 20px;
+            margin: 20px 0;
+        }
+        
+        .info-box h2 {
+            color: #2563eb;
+            font-size: 16px;
+            margin: 0 0 10px 0;
+        }
+        
+        .info-row {
+            display: flex;
+            margin: 8px 0;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            min-width: 180px;
+            color: #1f2937;
+        }
+        
+        .info-value {
+            color: #4b5563;
+        }
+        
+        .section {
+            margin: 30px 0;
+        }
+        
+        .section h2 {
+            color: #2563eb;
+            font-size: 20px;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .section h3 {
+            color: #1f2937;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .section p, .section ul {
+            color: #4b5563;
+            margin: 10px 0;
+        }
+        
+        .section ul {
+            padding-left: 25px;
+        }
+        
+        .section li {
+            margin: 8px 0;
+        }
+        
+        .programme-detail {
+            background-color: #fefce8;
+            border-left: 4px solid #eab308;
+            padding: 15px 20px;
+            margin: 15px 0;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background-color: #dbeafe;
+            color: #1e40af;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px 5px 5px 0;
+        }
+        
+        .highlight-box {
+            background-color: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .highlight-box h3 {
+            color: #059669;
+            margin-top: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th {
+            background-color: #2563eb;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <!-- EN-TÊTE -->
+    <div class="header">
+        <!-- Logo de l'organisme -->
+        <img src="{{logo_url}}" alt="Logo" class="logo">
+        <h1>Programme de Formation</h1>
+        <p style="font-size: 14px; color: #6b7280;">Conforme au Référentiel National Qualité (Qualiopi)</p>
+    </div>
+
+    <!-- INFORMATIONS GÉNÉRALES -->
+    <div class="info-box">
+        <h2>📋 INFORMATIONS GÉNÉRALES</h2>
+        <div class="info-row">
+            <span class="info-label">Intitulé de la formation :</span>
+            <span class="info-value">{{titre}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Nature de l'action :</span>
+            <span class="info-value">{{nature_action}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Durée totale :</span>
+            <span class="info-value">{{duree}} heures ({{duree_jours}} jours)</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Dates :</span>
+            <span class="info-value">Du {{date_debut}} au {{date_fin}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Modalité :</span>
+            <span class="info-value">{{modalite}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Lieu :</span>
+            <span class="info-value">{{lieu}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Client :</span>
+            <span class="info-value">{{entreprise_nom}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Nombre de participants :</span>
+            <span class="info-value">{{nombre_participants}} personnes</span>
+        </div>
+    </div>
+
+    <!-- OBJECTIFS PÉDAGOGIQUES -->
+    <div class="section">
+        <h2>🎯 OBJECTIFS PÉDAGOGIQUES</h2>
+        <p>À l'issue de cette formation, les participants seront capables de :</p>
+        <div style="white-space: pre-line;">{{objectifs}}</div>
+    </div>
+
+    <!-- PUBLIC VISÉ -->
+    <div class="section">
+        <h2>👥 PUBLIC VISÉ</h2>
+        <p>{{public_vise}}</p>
+    </div>
+
+    <!-- PRÉREQUIS -->
+    <div class="section">
+        <h2>📚 PRÉREQUIS</h2>
+        <p>{{prerequis}}</p>
+    </div>
+
+    <!-- COMPÉTENCES VISÉES -->
+    <div class="section">
+        <h2>💡 COMPÉTENCES VISÉES</h2>
+        <div style="white-space: pre-line;">{{competences_visees}}</div>
+    </div>
+
+    <!-- PROGRAMME DÉTAILLÉ -->
+    <div class="section page-break">
+        <h2>📖 PROGRAMME DÉTAILLÉ</h2>
+        <div class="programme-detail">
+            <div style="white-space: pre-line;">{{programme}}</div>
+        </div>
+    </div>
+
+    <!-- MÉTHODES PÉDAGOGIQUES -->
+    <div class="section">
+        <h2>🎓 MÉTHODES PÉDAGOGIQUES</h2>
+        <p>La formation alterne différentes méthodes pédagogiques pour favoriser l'apprentissage :</p>
+        <div style="white-space: pre-line;">{{methodes_pedagogiques}}</div>
+    </div>
+
+    <!-- MOYENS PÉDAGOGIQUES -->
+    <div class="section">
+        <h2>🛠️ MOYENS PÉDAGOGIQUES ET TECHNIQUES</h2>
+        <div style="white-space: pre-line;">{{moyens_pedagogiques}}</div>
+    </div>
+
+    <!-- MODALITÉS D'ÉVALUATION -->
+    <div class="section">
+        <h2>📊 MODALITÉS D'ÉVALUATION</h2>
+        <p>L'évaluation des acquis se fait tout au long de la formation :</p>
+        <div style="white-space: pre-line;">{{modalites_evaluation}}</div>
+    </div>
+
+    <!-- FORMATEUR -->
+    <div class="section">
+        <h2>👨‍🏫 FORMATEUR</h2>
+        <div class="highlight-box">
+            <h3>{{formateur_nom}}</h3>
+            <p><strong>Spécialités :</strong> {{formateur_specialites}}</p>
+            <p><strong>Expérience :</strong> {{formateur_experience}}</p>
+        </div>
+    </div>
+
+    <!-- ACCESSIBILITÉ HANDICAP -->
+    <div class="section">
+        <h2>♿ ACCESSIBILITÉ AUX PERSONNES EN SITUATION DE HANDICAP</h2>
+        <div style="white-space: pre-line;">{{accessibilite_handicap}}</div>
+        <p style="margin-top: 15px;"><strong>Contact référent handicap :</strong> {{referent_handicap_contact}}</p>
+    </div>
+
+    <!-- MODALITÉS D'ACCÈS -->
+    <div class="section">
+        <h2>📅 MODALITÉS ET DÉLAIS D'ACCÈS</h2>
+        <div class="info-row">
+            <span class="info-label">Délai d'accès :</span>
+            <span class="info-value">{{delai_acces}}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Modalités d'inscription :</span>
+            <span class="info-value">{{modalites_acces}}</span>
+        </div>
+    </div>
+
+    <!-- TARIF -->
+    <div class="section">
+        <h2>💰 TARIF</h2>
+        <table>
+            <tr>
+                <th>Désignation</th>
+                <th>Prix unitaire HT</th>
+                <th>Participants</th>
+                <th>Total HT</th>
+            </tr>
+            <tr>
+                <td>{{titre}}</td>
+                <td>{{prix_unitaire_ht}} €</td>
+                <td>{{nombre_participants}}</td>
+                <td><strong>{{prix_total_ht}} €</strong></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: right;"><strong>TVA ({{tva_taux}}%)</strong></td>
+                <td><strong>{{tva_montant}} €</strong></td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: right; background-color: #f3f4f6;"><strong>TOTAL TTC</strong></td>
+                <td style="background-color: #f3f4f6;"><strong>{{prix_total_ttc}} €</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- PIED DE PAGE -->
+    <div class="footer">
+        <p><strong>{{organisme_nom}}</strong></p>
+        <p>{{organisme_adresse}} - {{organisme_code_postal}} {{organisme_ville}}</p>
+        <p>SIRET : {{organisme_siret}} - N° de déclaration d'activité : {{organisme_nda}}</p>
+        <p>Tél : {{organisme_telephone}} - Email : {{organisme_email}}</p>
+        <p style="margin-top: 15px; font-size: 11px;">
+            Organisme de formation enregistré auprès du préfet de région.<br>
+            Cet enregistrement ne vaut pas agrément de l'État (article L.6352-12 du Code du travail).
+        </p>
+        <p style="margin-top: 10px; font-size: 11px;">
+            Document généré le {{date_generation}}
+        </p>
+    </div>
+</body>
+</html>

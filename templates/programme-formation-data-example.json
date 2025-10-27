@@ -1,0 +1,57 @@
+{
+  "titre": "Gestion de Projet Agile - Scrum & Kanban",
+  "nature_action": "Formation professionnelle continue",
+  "duree": 35,
+  "duree_jours": 5,
+  "date_debut": "15/11/2025",
+  "date_fin": "19/11/2025",
+  "modalite": "Présentiel",
+  "lieu": "Paris 15ème - 123 rue de la Formation",
+  "entreprise_nom": "ACME Corporation",
+  "nombre_participants": 8,
+  
+  "objectifs": "- Comprendre les principes et valeurs de l'agilité\n- Maîtriser le framework Scrum et ses cérémonies\n- Mettre en place et gérer un tableau Kanban\n- Animer efficacement une équipe agile\n- Gérer le backlog produit et prioriser les user stories\n- Mesurer et améliorer la performance de l'équipe",
+  
+  "public_vise": "Chefs de projet, managers, product owners, scrum masters, responsables d'équipe souhaitant adopter les méthodes agiles dans leur organisation.",
+  
+  "prerequis": "Aucun prérequis technique n'est nécessaire. Une expérience en gestion de projet est un plus mais non obligatoire. Motivation et ouverture d'esprit aux nouvelles méthodes de travail.",
+  
+  "competences_visees": "- Animer les cérémonies Scrum (Sprint Planning, Daily, Review, Retrospective)\n- Créer et gérer un backlog produit\n- Estimer la complexité des user stories\n- Mettre en place un tableau Kanban\n- Identifier et lever les obstacles\n- Mesurer la vélocité et améliorer la performance\n- Faciliter la collaboration au sein de l'équipe",
+  
+  "programme": "JOUR 1 : INTRODUCTION À L'AGILITÉ\n\nMatin (9h-12h30)\n• Contexte et historique de l'agilité\n• Le manifeste agile : 4 valeurs et 12 principes\n• Panorama des méthodes agiles (Scrum, Kanban, XP, Lean)\n• Les bénéfices de l'agilité pour l'organisation\n• Atelier : Quiz sur les valeurs agiles\n\nAprès-midi (14h-17h30)\n• Introduction au framework Scrum\n• Les 3 rôles : Product Owner, Scrum Master, Équipe de développement\n• Les 5 événements Scrum\n• Les 3 artefacts : Product Backlog, Sprint Backlog, Incrément\n• Atelier pratique : Simulation d'un Sprint\n\n---\n\nJOUR 2 : SCRUM EN PROFONDEUR\n\nMatin (9h-12h30)\n• Le rôle du Product Owner en détail\n• Créer et gérer le Product Backlog\n• Rédiger des user stories efficaces (format INVEST)\n• Prioriser avec la méthode MoSCoW\n• Atelier : Rédaction de user stories\n\nAprès-midi (14h-17h30)\n• Le Sprint Planning : préparation et animation\n• Estimation : Planning Poker et Story Points\n• Le Daily Scrum : bonnes pratiques\n• Atelier pratique : Sprint Planning d'un projet réel\n\n---\n\nJOUR 3 : KANBAN ET AMÉLIORATION CONTINUE\n\nMatin (9h-12h30)\n• Introduction à Kanban\n• Les 4 principes et 6 pratiques Kanban\n• Visualiser le flux de travail\n• Limiter le travail en cours (WIP)\n• Atelier : Créer un tableau Kanban\n\nAprès-midi (14h-17h30)\n• La Sprint Review : démonstration et feedback\n• La Sprint Retrospective : amélioration continue\n• Mesurer la performance : vélocité, burndown chart\n• Atelier : Rétrospective avec différentes techniques\n\n---\n\nJOUR 4 : PRATIQUES AVANCÉES\n\nMatin (9h-12h30)\n• Gérer les obstacles et les dépendances\n• Scrum à l'échelle : introduction à SAFe et LeSS\n• Outils agiles : Jira, Trello, Azure DevOps\n• Atelier : Configuration d'un projet dans Jira\n\nAprès-midi (14h-17h30)\n• Le rôle du Scrum Master : servant leader\n• Facilitation et coaching d'équipe\n• Gérer les conflits en mode agile\n• Atelier : Jeux de rôle sur des situations difficiles\n\n---\n\nJOUR 5 : MISE EN PRATIQUE ET CERTIFICATION\n\nMatin (9h-12h30)\n• Projet fil rouge : planification complète d'un Sprint\n• Présentation des projets par équipe\n• Feedback et retours d'expérience\n\nAprès-midi (14h-17h30)\n• QCM de validation des acquis\n• Préparation à la certification (optionnelle)\n• Plan d'action personnel : mise en œuvre dans votre contexte\n• Évaluation de la formation et remise des certificats",
+  
+  "methodes_pedagogiques": "• Apports théoriques illustrés par des exemples concrets\n• Ateliers pratiques et mises en situation\n• Serious game agile (jeu de simulation)\n• Études de cas réels d'entreprises\n• Travaux en sous-groupes\n• Partage d'expériences entre participants\n• Projet fil rouge tout au long de la formation",
+  
+  "moyens_pedagogiques": "• Support de formation PDF remis à chaque participant\n• Vidéos pédagogiques et tutoriels\n• Accès à une plateforme e-learning pendant 3 mois\n• Outils collaboratifs en ligne (Miro, Trello)\n• Matériel pour les ateliers (post-it, tableaux, cartes)\n• Salle équipée : vidéoprojecteur, paperboard, wifi\n• Accès à des outils professionnels (Jira, Azure DevOps)",
+  
+  "modalites_evaluation": "• Évaluation diagnostique en début de formation (quiz)\n• Évaluations formatives tout au long de la formation (ateliers)\n• QCM de validation des acquis en fin de formation\n• Projet fil rouge évalué par le formateur\n• Mise en situation professionnelle notée\n• Évaluation à chaud (satisfaction) en fin de formation\n• Évaluation à froid 2 mois après la formation\n• Attestation de formation remise à chaque participant",
+  
+  "formateur_nom": "Jean DUPONT",
+  "formateur_specialites": "Agilité, Scrum, Kanban, Management de projet",
+  "formateur_experience": "15 ans d'expérience en gestion de projet agile. Scrum Master certifié (PSM II) et formateur agréé. A accompagné plus de 50 entreprises dans leur transformation agile.",
+  
+  "accessibilite_handicap": "Nos locaux sont accessibles aux personnes à mobilité réduite (PMR).\n\nNous adaptons nos formations aux personnes en situation de handicap :\n• Supports de formation adaptés (police agrandie, contraste élevé)\n• Interprète LSF sur demande\n• Aménagement du rythme et des horaires\n• Matériel pédagogique adapté\n\nPour toute demande spécifique, merci de nous contacter au moins 15 jours avant le début de la formation afin d'étudier ensemble les adaptations nécessaires.",
+  
+  "referent_handicap_contact": "Marie MARTIN - handicap@aladeconseils.com - 01 23 45 67 89",
+  
+  "delai_acces": "2 semaines minimum avant le début de la formation",
+  "modalites_acces": "Inscription en ligne sur notre site web ou par email. Un entretien téléphonique peut être organisé pour valider l'adéquation de la formation avec vos besoins.",
+  
+  "prix_unitaire_ht": 2500,
+  "prix_total_ht": 20000,
+  "tva_taux": 20,
+  "tva_montant": 4000,
+  "prix_total_ttc": 24000,
+  
+  "organisme_nom": "Aladé Conseil",
+  "organisme_adresse": "123 Avenue de la Formation",
+  "organisme_code_postal": "75015",
+  "organisme_ville": "Paris",
+  "organisme_siret": "123 456 789 00012",
+  "organisme_nda": "11 75 12345 75",
+  "organisme_telephone": "01 23 45 67 89",
+  "organisme_email": "contact@aladeconseils.com",
+  
+  "logo_url": "https://votre-domaine.com/logo-alade-conseil.png",
+  "date_generation": "23/10/2025"
+}

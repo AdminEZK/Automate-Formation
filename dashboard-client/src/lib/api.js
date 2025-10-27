@@ -37,6 +37,11 @@ export const sessionsApi = {
 
   // Envoyer les convocations
   sendConvocations: (id) => api.post(`/sessions/${id}/send-convocations`),
+
+  // Télécharger le programme de formation
+  downloadProgramme: (id) => api.get(`/sessions/${id}/generate-programme`, {
+    responseType: 'blob',
+  }),
 };
 
 // Participants API

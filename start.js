@@ -2,6 +2,9 @@
  * Script de démarrage robuste pour Render
  */
 
+// Charger les variables d'environnement
+require('dotenv').config();
+
 // Vérifier les variables d'environnement critiques
 const requiredEnvVars = [
   'SUPABASE_URL',

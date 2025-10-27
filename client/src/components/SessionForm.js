@@ -15,6 +15,7 @@ const SessionForm = ({ isEdit = false }) => {
   const [error, setError] = useState(null);
   const [entreprises, setEntreprises] = useState([]);
   const [formations, setFormations] = useState([]);
+  const [formateurs, setFormateurs] = useState([]);
 
   // Chargement des données pour le formulaire
   useEffect(() => {
@@ -37,6 +38,16 @@ const SessionForm = ({ isEdit = false }) => {
         
         if (formationsError) throw formationsError;
         setFormations(formationsData);
+        
+        // Chargement des formateurs actifs
+        const { data: formateursData, error: formateursError } = await supabaseClient
+          .from('formateurs')
+          .select('id, nom, prenom')
+          .eq('actif', true)
+          .order('nom');
+        
+        if (formateursError) throw formateursError;
+        setFormateurs(formateursData);
         
         // Si mode édition, charger les données de la session
         if (isEdit && id) {
@@ -174,7 +185,7 @@ const SessionForm = ({ isEdit = false }) => {
             </Row>
 
             <Row>
-              <Col md={6}>
+              <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Nombre de participants</Form.Label>
                   <Form.Control 
@@ -192,7 +203,7 @@ const SessionForm = ({ isEdit = false }) => {
                 </Form.Group>
               </Col>
               
-              <Col md={6}>
+              <Col md={4}>
                 <Form.Group className="mb-3">
                   <Form.Label>Lieu</Form.Label>
                   <Form.Control 
@@ -200,6 +211,23 @@ const SessionForm = ({ isEdit = false }) => {
                     placeholder="Lieu de la formation"
                     {...register('lieu')}
                   />
+                </Form.Group>
+              </Col>
+              
+              <Col md={4}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Formateur</Form.Label>
+                  <Form.Select {...register('formateur_id')}>
+                    <option value="">Sélectionnez un formateur</option>
+                    {formateurs.map(formateur => (
+                      <option key={formateur.id} value={formateur.id}>
+                        {formateur.prenom} {formateur.nom}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Text className="text-muted">
+                    Optionnel
+                  </Form.Text>
                 </Form.Group>
               </Col>
             </Row>
@@ -260,6 +288,111 @@ const SessionForm = ({ isEdit = false }) => {
                 </Form.Select>
               </Form.Group>
             )}
+
+            {/* Section Prix */}
+            <Card className="mb-3 mt-4">
+              <Card.Header className="bg-light">
+                <h5 className="mb-0">💰 Informations Tarifaires</h5>
+              </Card.Header>
+              <Card.Body>
+                <Row>
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Prix unitaire HT (€)</Form.Label>
+                      <Form.Control 
+                        type="number" 
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...register('prix_unitaire_ht', { 
+                          valueAsNumber: true,
+                          min: { value: 0, message: 'Le prix doit être positif' }
+                        })}
+                        isInvalid={!!errors.prix_unitaire_ht}
+                      />
+                      <Form.Text className="text-muted">
+                        Prix par participant
+                      </Form.Text>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.prix_unitaire_ht?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Prix total HT (€)</Form.Label>
+                      <Form.Control 
+                        type="number" 
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...register('prix_total_ht', { 
+                          valueAsNumber: true,
+                          min: { value: 0, message: 'Le prix doit être positif' }
+                        })}
+                        isInvalid={!!errors.prix_total_ht}
+                      />
+                      <Form.Text className="text-muted">
+                        Prix total de la session
+                      </Form.Text>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.prix_total_ht?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                  
+                  <Col md={4}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Frais de déplacement (€)</Form.Label>
+                      <Form.Control 
+                        type="number" 
+                        step="0.01"
+                        min="0"
+                        placeholder="0.00"
+                        {...register('frais_deplacement', { 
+                          valueAsNumber: true,
+                          min: { value: 0, message: 'Les frais doivent être positifs' }
+                        })}
+                        isInvalid={!!errors.frais_deplacement}
+                      />
+                      <Form.Text className="text-muted">
+                        Frais supplémentaires
+                      </Form.Text>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.frais_deplacement?.message}
+                      </Form.Control.Feedback>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Statut du devis</Form.Label>
+                      <Form.Select {...register('statut_devis')}>
+                        <option value="brouillon">📝 Brouillon</option>
+                        <option value="en_attente_validation">⏳ En attente de validation</option>
+                        <option value="valide">✅ Validé</option>
+                        <option value="refuse">❌ Refusé</option>
+                      </Form.Select>
+                      <Form.Text className="text-muted">
+                        État de validation du devis
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Alert variant="info" className="mb-0">
+                  <small>
+                    <strong>💡 Calculs automatiques :</strong><br/>
+                    • Prix TTC = Prix HT × 1.20<br/>
+                    • TVA = Prix HT × 0.20<br/>
+                    • Total avec frais = Prix TTC + Frais de déplacement
+                  </small>
+                </Alert>
+              </Card.Body>
+            </Card>
 
             <div className="d-flex gap-2 mt-4">
               <Button 
