@@ -116,10 +116,10 @@ router.post('/sessions/:id/mark-devis-sent', async (req, res) => {
       return res.status(404).json({ error: 'Session non trouvée' });
     }
 
-    // Vérifier que la session est au statut 'demande'
-    if (session.statut !== 'demande') {
+    // Vérifier que la session est au statut 'en_attente' (demande validée, devis prêt à être envoyé)
+    if (session.statut !== 'en_attente') {
       return res.status(400).json({ 
-        error: 'Le devis ne peut être marqué comme envoyé que pour les sessions au statut "demande"' 
+        error: 'Le devis ne peut être marqué comme envoyé que pour les sessions au statut "en_attente" (demande déjà validée)' 
       });
     }
 

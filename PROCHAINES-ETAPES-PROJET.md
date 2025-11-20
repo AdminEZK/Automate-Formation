@@ -32,6 +32,29 @@ npm run dev
 - Vérifier l'affichage : `Session AC2025 N°ABC123 - Formation`
 - Vérifier la modalité (Présentiel/Distanciel/Mixte)
 
+### 3. Rendre le dashboard utilisable aujourd'hui
+
+- [ ] **Vérifier que les données sont bien en base**
+  - Dans Supabase, contrôler les tables `entreprises`, `sessions_formation` et `participants` après l'envoi d'un formulaire.
+  - Vérifier que la vue `vue_sessions_formation` contient bien les nouvelles lignes (colonnes `entreprise_id`, `statut`, `session_created_at`).
+
+- [ ] **Vérifier l'API backend pour les demandes/sessions**
+  - Tester `GET /api/demandes` (vue `vue_sessions_formation` filtrée sur `statut = 'demande'`).
+  - Tester `GET /api/entreprises` et `GET /api/entreprises/:id/sessions`.
+  - Confirmer que la réponse JSON contient les nouvelles demandes tout de suite après un formulaire.
+
+- [ ] **Vérifier la lecture côté dashboard React**
+  - Identifier la page/listing qui affiche les demandes/sessions.
+  - Vérifier qu'elle appelle bien l'endpoint `/api/demandes` ou `/api/sessions` (via `sessionsApi` / `entreprisesApi`).
+  - S'assurer qu'il n'y a pas de filtre bloquant (par exemple un `statut` incorrect ou un tri sur une mauvaise colonne).
+
+- [ ] **Valider le cycle complet visible**
+  - Envoyer une nouvelle demande via le formulaire public.
+  - Confirmer :
+    - l'entreprise est créée/maj dans `entreprises`,
+    - la session est créée avec `statut = 'demande'` dans `sessions_formation` / `vue_sessions_formation`,
+    - la demande apparaît dans le dashboard sans recharger le backend.
+
 ---
 
 ## 📋 **PARCOURS CLIENT COMPLET (selon PRD)**
@@ -67,7 +90,7 @@ npm run dev
 - [ ] Envoi automatique par email via Resend
 - [ ] Tracking d'ouverture des emails
 - [ ] Bouton "Accepter" dans l'email client
-- [ ] Changement statut : `demande` → `en_attente` → `confirmee`
+- [ ] Changement statut : `demande` → `en_attente` → `devis_envoye` → (`en_attente` si accepté) → `confirmee` (ou `annulee` si refusé)
 
 **Documents à générer :**
 - Proposition de formation (remplace le "devis")
