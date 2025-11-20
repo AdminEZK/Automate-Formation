@@ -93,10 +93,18 @@ router.post('/sessions/:id/validate', async (req, res) => {
       });
     }
 
-    // Mettre à jour le statut
+    // Mettre à jour le statut + date de validation de la demande
     const updatedSession = await supabaseService.updateSession(id, {
-      statut: 'en_attente'
+      statut: 'en_attente',
+      demande_validee_le: new Date().toISOString()
     });
+
+    if (!updatedSession) {
+      return res.status(500).json({
+        success: false,
+        error: 'Aucune session mise à jour lors de la validation'
+      });
+    }
 
     res.json({ success: true, session: updatedSession });
   } catch (error) {
