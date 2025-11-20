@@ -314,13 +314,21 @@ class SupabaseService {
    */
   async updateSession(id, sessionData) {
     try {
+      console.log('[updateSession] Demande de mise à jour', { id, sessionData });
+
       const { data, error } = await supabase
         .from('sessions_formation')
         .update(sessionData)
         .eq('id', id)
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('[updateSession] Erreur Supabase', { id, sessionData, error });
+        throw error;
+      }
+
+      console.log('[updateSession] Résultat mise à jour', { id, rowCount: data?.length || 0, data });
+
       return data[0];
     } catch (error) {
       console.error(`Erreur lors de la mise à jour de la session ${id}:`, error);
