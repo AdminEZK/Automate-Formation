@@ -114,6 +114,13 @@ router.post('/sessions/:id/mark-devis-sent', async (req, res) => {
       devis_envoye_le: new Date().toISOString()
     });
 
+    if (!updatedSession) {
+      console.warn('[mark-devis-sent] Aucune session mise à jour, rechargement depuis la vue');
+      const reloadedSession = await supabaseService.getSessionById(id);
+      return res.json({ success: true, session: reloadedSession });
+    }
+
+    console.log('[mark-devis-sent] Session après mise à jour', { id, statut: updatedSession.statut, devis_envoye_le: updatedSession.devis_envoye_le });
     res.json({ success: true, session: updatedSession });
   } catch (error) {
     console.error('Erreur lors du marquage du devis comme envoyé:', error);
