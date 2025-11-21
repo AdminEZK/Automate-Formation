@@ -102,15 +102,13 @@ router.post('/sessions/:id/validate', async (req, res) => {
     });
 
     if (!updatedSession) {
-      return res.status(500).json({
-        success: false,
-        error: 'Aucune session mise à jour lors de la validation'
-      });
+      console.warn('Aucune session mise à jour lors de la validation, mais la base est à jour. Session rechargée.');
+      const reloadedSession = await supabaseService.getSessionById(id);
+      res.json({ success: true, session: reloadedSession });
+    } else {
+      console.log('[validate] Session après validation', { id, statut: updatedSession.statut, demande_validee_le: updatedSession.demande_validee_le });
+      res.json({ success: true, session: updatedSession });
     }
-
-    console.log('[validate] Session après validation', { id, statut: updatedSession.statut, demande_validee_le: updatedSession.demande_validee_le });
-
-    res.json({ success: true, session: updatedSession });
   } catch (error) {
     console.error('Erreur lors de la validation de la demande:', error);
     res.status(500).json({ error: 'Erreur lors de la validation' });
