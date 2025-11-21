@@ -16,12 +16,12 @@ CREATE OR REPLACE FUNCTION update_session_status(
 )
 RETURNS TABLE (
   id UUID,
-  statut TEXT,
+  statut VARCHAR(50),
   demande_validee_le TIMESTAMP WITH TIME ZONE,
-  devis_envoye_le TIMESTAMP WITH TIME ZONE,
-  devis_accepte_le TIMESTAMP WITH TIME ZONE,
-  convention_signee_le TIMESTAMP WITH TIME ZONE,
-  convocations_envoyees_le TIMESTAMP WITH TIME ZONE,
+  devis_envoye_le TIMESTAMP WITHOUT TIME ZONE,
+  devis_accepte_le TIMESTAMP WITHOUT TIME ZONE,
+  convention_signee_le TIMESTAMP WITHOUT TIME ZONE,
+  convocations_envoyees_le TIMESTAMP WITHOUT TIME ZONE,
   updated_at TIMESTAMP WITH TIME ZONE
 )
 LANGUAGE plpgsql
