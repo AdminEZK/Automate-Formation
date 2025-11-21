@@ -341,13 +341,15 @@ class SupabaseService {
         console.log('[updateSession] État AVANT UPDATE', { id, before: beforeUpdate });
       }
 
-      // Faire l'UPDATE sans .select() pour éviter les problèmes de rowCount = 0
-      const { error, status, statusText } = await supabase
+      // Faire l'UPDATE avec .match() au lieu de .eq() pour forcer la mise à jour
+      const updateResult = await supabase
         .from('sessions_formation')
         .update(sessionData)
-        .eq('id', id);
+        .match({ id: id });
+      
+      const { error, status, statusText, count } = updateResult;
 
-      console.log('[updateSession] Résultat UPDATE', { id, error, status, statusText });
+      console.log('[updateSession] Résultat UPDATE', { id, error, status, statusText, count });
 
       if (error) {
         console.error('[updateSession] Erreur Supabase UPDATE', { id, sessionData, error });
