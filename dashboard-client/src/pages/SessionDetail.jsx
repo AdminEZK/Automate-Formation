@@ -272,6 +272,33 @@ export function SessionDetail() {
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
+              {/* Message d'annulation */}
+              {session.statut === 'annulee' && (
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3 flex-1">
+                      <h3 className="text-lg font-semibold text-red-800">
+                        ❌ Formation annulée
+                      </h3>
+                      <div className="mt-2 text-sm text-red-700">
+                        <p>Cette session de formation a été annulée.</p>
+                        {session.raison_annulation && (
+                          <p className="mt-2">
+                            <span className="font-medium">Raison : </span>
+                            {session.raison_annulation}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* AVANT LA FORMATION */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
