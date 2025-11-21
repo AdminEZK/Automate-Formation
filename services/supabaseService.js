@@ -327,12 +327,21 @@ class SupabaseService {
         throw error;
       }
 
-      console.log('[updateSession] UPDATE exécuté sans erreur, rechargement de la session depuis la vue');
+      console.log('[updateSession] UPDATE exécuté sans erreur, rechargement direct depuis sessions_formation');
 
-      // Recharger la session depuis vue_sessions_formation pour avoir l'état à jour
-      const updatedSession = await this.getSessionById(id);
+      // Recharger directement depuis la table sessions_formation (pas la vue qui peut être en cache)
+      const { data: updatedSession, error: selectError } = await supabase
+        .from('sessions_formation')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-      console.log('[updateSession] Session rechargée', { id, statut: updatedSession?.statut });
+      if (selectError) {
+        console.error('[updateSession] Erreur lors du rechargement', { id, selectError });
+        throw selectError;
+      }
+
+      console.log('[updateSession] Session rechargée depuis la table', { id, statut: updatedSession?.statut, demande_validee_le: updatedSession?.demande_validee_le });
 
       return updatedSession;
     } catch (error) {
