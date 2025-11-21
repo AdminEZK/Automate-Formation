@@ -15,8 +15,20 @@ if (!supabaseUrl || !supabaseKey) {
   process.exit(1);
 }
 
-// Création du client Supabase
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Création du client Supabase avec options pour bypasser RLS
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
+
+// Log pour vérifier quelle clé est utilisée
+console.log('[SupabaseService] Initialisation avec:', {
+  url: supabaseUrl,
+  keyType: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE_KEY' : 'ANON_KEY',
+  keyPrefix: supabaseKey?.substring(0, 20) + '...'
+});
 
 /**
  * Service pour interagir avec la base de données Supabase
@@ -316,14 +328,29 @@ class SupabaseService {
     try {
       console.log('[updateSession] Demande de mise à jour', { id, sessionData });
 
+      // Lire la session AVANT l'update pour comparer
+      const { data: beforeUpdate, error: beforeError } = await supabase
+        .from('sessions_formation')
+        .select('statut, demande_validee_le, devis_envoye_le')
+        .eq('id', id)
+        .single();
+
+      if (beforeError) {
+        console.error('[updateSession] Erreur lecture avant UPDATE', { id, beforeError });
+      } else {
+        console.log('[updateSession] État AVANT UPDATE', { id, before: beforeUpdate });
+      }
+
       // Faire l'UPDATE sans .select() pour éviter les problèmes de rowCount = 0
-      const { error } = await supabase
+      const { error, status, statusText } = await supabase
         .from('sessions_formation')
         .update(sessionData)
         .eq('id', id);
 
+      console.log('[updateSession] Résultat UPDATE', { id, error, status, statusText });
+
       if (error) {
-        console.error('[updateSession] Erreur Supabase', { id, sessionData, error });
+        console.error('[updateSession] Erreur Supabase UPDATE', { id, sessionData, error });
         throw error;
       }
 
@@ -341,7 +368,12 @@ class SupabaseService {
         throw selectError;
       }
 
-      console.log('[updateSession] Session rechargée depuis la table', { id, statut: updatedSession?.statut, demande_validee_le: updatedSession?.demande_validee_le });
+      console.log('[updateSession] Session rechargée depuis la table', { 
+        id, 
+        statut: updatedSession?.statut, 
+        demande_validee_le: updatedSession?.demande_validee_le,
+        devis_envoye_le: updatedSession?.devis_envoye_le
+      });
 
       return updatedSession;
     } catch (error) {
