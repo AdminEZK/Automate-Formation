@@ -7,64 +7,39 @@ const supabaseService = require('../services/supabaseService');
 // ROUTES DE LECTURE (GET)
 // ============================================
 
-// Récupérer toutes les sessions
+// Récupérer toutes les sessions (vue enrichie vue_sessions_formation)
 router.get('/sessions', async (req, res) => {
   try {
     const { statut, entreprise_id } = req.query;
-    
-    // Construire la requête avec filtres
-    let query = supabaseService.supabase
-      .from('sessions')
-      .select(`
-        *,
-        entreprises:entreprise_id(nom_entreprise),
-        formations_catalogue:formation_catalogue_id(titre),
-        formateurs:formateur_id(nom, prenom)
-      `)
-      .order('created_at', { ascending: false });
-    
-    // Appliquer les filtres si présents
-    if (statut) {
-      query = query.eq('statut', statut);
-    }
-    if (entreprise_id) {
-      query = query.eq('entreprise_id', entreprise_id);
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) throw error;
-    
-    res.json({ success: true, sessions: data });
+
+    // Utiliser le service qui lit depuis vue_sessions_formation
+    const options = {};
+    if (statut) options.statut = statut;
+    if (entreprise_id) options.entrepriseId = entreprise_id;
+
+    const sessions = await supabaseService.getAllSessions(options);
+
+    // Le frontend attend directement un tableau dans response.data
+    res.json(sessions);
   } catch (error) {
     console.error('Erreur lors de la récupération des sessions:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération des sessions', details: error.message });
   }
 });
 
-// Récupérer une session par ID
+// Récupérer une session par ID (vue vue_sessions_formation)
 router.get('/sessions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const { data, error } = await supabaseService.supabase
-      .from('sessions')
-      .select(`
-        *,
-        entreprises:entreprise_id(nom_entreprise, email, telephone, siret, adresse, code_postal, ville),
-        formations_catalogue:formation_catalogue_id(titre, description, duree, objectifs, programme),
-        formateurs:formateur_id(nom, prenom, email, telephone, specialites)
-      `)
-      .eq('id', id)
-      .single();
-    
-    if (error) throw error;
-    
-    if (!data) {
+
+    const session = await supabaseService.getSessionById(id);
+
+    if (!session) {
       return res.status(404).json({ error: 'Session non trouvée' });
     }
-    
-    res.json({ success: true, session: data });
+
+    // Le frontend attend directement l'objet session dans response.data
+    res.json(session);
   } catch (error) {
     console.error('Erreur lors de la récupération de la session:', error);
     res.status(500).json({ error: 'Erreur lors de la récupération de la session', details: error.message });
