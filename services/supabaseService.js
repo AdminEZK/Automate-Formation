@@ -326,58 +326,55 @@ class SupabaseService {
    */
   async updateSession(id, sessionData) {
     try {
-      console.log('[updateSession] Demande de mise à jour', { id, sessionData });
+      console.log('[updateSession] Demande de mise à jour via RPC', { id, sessionData });
 
-      // Lire la session AVANT l'update pour comparer
-      const { data: beforeUpdate, error: beforeError } = await supabase
-        .from('sessions_formation')
-        .select('statut, demande_validee_le, devis_envoye_le')
-        .eq('id', id)
-        .single();
-
-      if (beforeError) {
-        console.error('[updateSession] Erreur lecture avant UPDATE', { id, beforeError });
-      } else {
-        console.log('[updateSession] État AVANT UPDATE', { id, before: beforeUpdate });
-      }
-
-      // Faire l'UPDATE avec .match() au lieu de .eq() pour forcer la mise à jour
-      const updateResult = await supabase
-        .from('sessions_formation')
-        .update(sessionData)
-        .match({ id: id });
-      
-      const { error, status, statusText, count } = updateResult;
-
-      console.log('[updateSession] Résultat UPDATE', { id, error, status, statusText, count });
+      // Utiliser la fonction SQL RPC pour garantir que l'UPDATE fonctionne
+      const { data, error } = await supabase.rpc('update_session_status', {
+        p_session_id: id,
+        p_statut: sessionData.statut || null,
+        p_demande_validee_le: sessionData.demande_validee_le || null,
+        p_devis_envoye_le: sessionData.devis_envoye_le || null,
+        p_devis_accepte_le: sessionData.devis_accepte_le || null,
+        p_convention_signee_le: sessionData.convention_signee_le || null,
+        p_convocations_envoyees_le: sessionData.convocations_envoyees_le || null
+      });
 
       if (error) {
-        console.error('[updateSession] Erreur Supabase UPDATE', { id, sessionData, error });
+        console.error('[updateSession] Erreur RPC', { id, sessionData, error });
         throw error;
       }
 
-      console.log('[updateSession] UPDATE exécuté sans erreur, rechargement direct depuis sessions_formation');
+      console.log('[updateSession] RPC exécuté avec succès', { 
+        id, 
+        result: data?.[0]
+      });
 
-      // Recharger directement depuis la table sessions_formation (pas la vue qui peut être en cache)
-      const { data: updatedSession, error: selectError } = await supabase
-        .from('sessions_formation')
+      // La fonction RPC retourne directement la session mise à jour
+      const updatedSession = data?.[0];
+
+      if (!updatedSession) {
+        throw new Error(`Session ${id} non trouvée après mise à jour`);
+      }
+
+      // Recharger depuis vue_sessions_formation pour avoir toutes les données enrichies
+      const { data: fullSession, error: viewError } = await supabase
+        .from('vue_sessions_formation')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (selectError) {
-        console.error('[updateSession] Erreur lors du rechargement', { id, selectError });
-        throw selectError;
+      if (viewError) {
+        console.warn('[updateSession] Erreur rechargement vue, retour session basique', { id, viewError });
+        return updatedSession;
       }
 
-      console.log('[updateSession] Session rechargée depuis la table', { 
+      console.log('[updateSession] Session complète rechargée depuis la vue', { 
         id, 
-        statut: updatedSession?.statut, 
-        demande_validee_le: updatedSession?.demande_validee_le,
-        devis_envoye_le: updatedSession?.devis_envoye_le
+        statut: fullSession?.statut,
+        demande_validee_le: fullSession?.demande_validee_le
       });
 
-      return updatedSession;
+      return fullSession;
     } catch (error) {
       console.error(`Erreur lors de la mise à jour de la session ${id}:`, error);
       throw error;
