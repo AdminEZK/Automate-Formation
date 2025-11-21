@@ -28,6 +28,9 @@ export const sessionsApi = {
   // Marquer le devis comme envoyé
   markDevisSent: (id) => api.post(`/sessions/${id}/mark-devis-sent`),
 
+  // Générer et envoyer la proposition commerciale (devis + programme)
+  generateAndSendProposition: (id) => api.post(`/sessions/${id}/generate-and-send-proposition`),
+
   // Réponse au devis (accepté/refusé)
   devisResponse: (id, response) => 
     api.post(`/sessions/${id}/devis-response`, { response }),

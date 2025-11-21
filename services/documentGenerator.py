@@ -45,7 +45,7 @@ class QualiopisDocumentGenerator:
     
     def get_session_data(self, session_id: str) -> Dict:
         """Récupère toutes les données d'une session"""
-        response = self.supabase.table('vue_sessions_complete').select('*').eq('id', session_id).execute()
+        response = self.supabase.table('vue_sessions_formation').select('*').eq('id', session_id).execute()
         if not response.data:
             raise ValueError(f"Session {session_id} non trouvée")
         return response.data[0]
@@ -109,11 +109,11 @@ class QualiopisDocumentGenerator:
         # Informations entreprise
         story.append(Paragraph("<b>ENTREPRISE CLIENTE</b>", styles['Heading2']))
         entreprise_data = [
-            ['Raison sociale', session['entreprise_nom']],
-            ['SIRET', session['entreprise_siret'] or 'N/A'],
-            ['Adresse', f"{session['entreprise_adresse']}, {session['entreprise_code_postal']} {session['entreprise_ville']}"],
-            ['Contact', session['entreprise_email']],
-            ['Téléphone', session['entreprise_telephone'] or 'N/A']
+            ['Raison sociale', session.get('entreprise_nom', 'N/A')],
+            ['SIRET', session.get('entreprise_siret', 'N/A') or 'N/A'],
+            ['Adresse', f"{session.get('entreprise_adresse', '')}, {session.get('entreprise_code_postal', '')} {session.get('entreprise_ville', '')}"],
+            ['Contact', session.get('entreprise_email', 'N/A')],
+            ['Téléphone', session.get('entreprise_telephone', 'N/A') or 'N/A']
         ]
         table = Table(entreprise_data, colWidths=[5*cm, 12*cm])
         table.setStyle(TableStyle([
@@ -131,12 +131,12 @@ class QualiopisDocumentGenerator:
         # Informations formation
         story.append(Paragraph("<b>FORMATION PROPOSÉE</b>", styles['Heading2']))
         formation_data = [
-            ['Intitulé', session['formation_titre']],
+            ['Intitulé', session.get('formation_titre', 'N/A')],
             ['Nature de l\'action', session.get('formation_nature_action', 'Formation')],
-            ['Durée', f"{session['formation_duree']} heures"],
-            ['Dates', f"Du {self.format_date(session['date_debut'])} au {self.format_date(session['date_fin'])}"],
-            ['Lieu', session['lieu']],
-            ['Nombre de participants', str(session['nombre_participants'])]
+            ['Durée', f"{session.get('formation_duree', 'N/A')} heures"],
+            ['Dates', f"Du {self.format_date(session.get('date_debut', ''))} au {self.format_date(session.get('date_fin', ''))}"],
+            ['Lieu', session.get('lieu', 'À définir')],
+            ['Nombre de participants', str(session.get('nombre_participants', 'N/A'))]
         ]
         table = Table(formation_data, colWidths=[5*cm, 12*cm])
         table.setStyle(TableStyle([
@@ -151,28 +151,23 @@ class QualiopisDocumentGenerator:
         story.append(table)
         story.append(Spacer(1, 0.5*cm))
         
-        # Tarification
+        # Note sur le devis
         story.append(Paragraph("<b>TARIFICATION</b>", styles['Heading2']))
-        prix_data = [
-            ['Prix unitaire HT', self.format_prix(session['formation_prix_ht'])],
-            ['Nombre de participants', str(session['nombre_participants'])],
-            ['Prix total HT', self.format_prix(session['prix_total_ht'])],
-            ['TVA (20%)', self.format_prix(session['prix_total_ht'] * 0.20)],
-            ['Prix total TTC', self.format_prix(session['prix_total_ht'] * 1.20)]
-        ]
-        table = Table(prix_data, colWidths=[10*cm, 7*cm])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
-            ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#003366')),
-            ('TEXTCOLOR', (0, -1), (-1, -1), colors.white),
-            ('ALIGN', (1, 0), (1, -1), 'RIGHT'),
-            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black)
-        ]))
-        story.append(table)
+        story.append(Paragraph(
+            "Un devis détaillé vous sera transmis par notre équipe commerciale dans les plus brefs délais.",
+            styles['Normal']
+        ))
+        story.append(Spacer(1, 0.5*cm))
+        
+        # Informations de contact
+        story.append(Paragraph("<b>CONTACT</b>", styles['Heading2']))
+        contact_text = f"""
+        Pour toute question ou demande d'information complémentaire :<br/>
+        <b>Email :</b> {organisme.get('email', 'contact@aladeconseils.com')}<br/>
+        <b>Téléphone :</b> {organisme.get('telephone', '02.99.19.37.09')}<br/>
+        <b>Adresse :</b> {organisme.get('adresse', '')}, {organisme.get('code_postal', '')} {organisme.get('ville', '')}
+        """
+        story.append(Paragraph(contact_text, styles['Normal']))
         story.append(Spacer(1, 1*cm))
         
         # Pied de page
@@ -723,29 +718,123 @@ class QualiopisDocumentGenerator:
         except Exception as e:
             print(f"Erreur lors de la génération des documents: {str(e)}")
             raise
+    
+    # ============================================
+    # MÉTHODES PAR PHASE
+    # ============================================
+    
+    def generer_phase_proposition(self, session_id: str) -> Dict[str, str]:
+        """
+        PHASE 2 : Génère la proposition commerciale + programme
+        
+        Returns:
+            Dict avec les chemins des fichiers générés
+        """
+        try:
+            proposition_path = self.generer_proposition_formation(session_id)
+            programme_path = self.generer_programme_formation(session_id)
+            
+            return {
+                'success': True,
+                'proposition': proposition_path,
+                'programme': programme_path
+            }
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
 
 
 # ============================================
-# EXEMPLE D'UTILISATION
+# CLI - APPEL EN LIGNE DE COMMANDE
 # ============================================
 
 if __name__ == "__main__":
+    import sys
     from supabase import create_client
     import os
+    from dotenv import load_dotenv
+    
+    # Charger les variables d'environnement
+    load_dotenv()
     
     # Configuration Supabase
     SUPABASE_URL = os.getenv('SUPABASE_URL')
-    SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+    SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY') or os.getenv('SUPABASE_KEY')
+    
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        print(json.dumps({
+            'success': False,
+            'error': 'Variables d\'environnement SUPABASE_URL et SUPABASE_KEY manquantes'
+        }))
+        sys.exit(1)
     
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    
-    # Créer le générateur
     generator = QualiopisDocumentGenerator(supabase)
     
-    # Générer tous les documents pour une session
-    session_id = "votre-session-id"
-    documents = generator.generer_tous_documents_session(session_id)
+    # Vérifier les arguments
+    if len(sys.argv) < 3:
+        print(json.dumps({
+            'success': False,
+            'error': 'Usage: python documentGenerator.py <methode> <session_id> [participant_id]'
+        }))
+        sys.exit(1)
     
-    print("Documents générés:")
-    for type_doc, fichiers in documents.items():
-        print(f"  {type_doc}: {len(fichiers)} fichier(s)")
+    methode = sys.argv[1]
+    session_id = sys.argv[2]
+    participant_id = sys.argv[3] if len(sys.argv) > 3 else None
+    
+    try:
+        # Router vers la bonne méthode
+        if methode == 'generer_phase_proposition':
+            result = generator.generer_phase_proposition(session_id)
+            print(json.dumps(result))
+        
+        elif methode == 'generer_proposition':
+            filepath = generator.generer_proposition_formation(session_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_programme':
+            filepath = generator.generer_programme_formation(session_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_convention':
+            filepath = generator.generer_convention_formation(session_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_convocation':
+            if not participant_id:
+                print(json.dumps({'success': False, 'error': 'participant_id requis'}))
+                sys.exit(1)
+            filepath = generator.generer_convocation(session_id, participant_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_certificat':
+            if not participant_id:
+                print(json.dumps({'success': False, 'error': 'participant_id requis'}))
+                sys.exit(1)
+            filepath = generator.generer_certificat_realisation(session_id, participant_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_feuille_emargement':
+            filepath = generator.generer_feuille_emargement(session_id)
+            print(json.dumps({'success': True, 'filePath': filepath}))
+        
+        elif methode == 'generer_tous_documents_session':
+            documents = generator.generer_tous_documents_session(session_id)
+            print(json.dumps({'success': True, 'documents': documents}))
+        
+        else:
+            print(json.dumps({
+                'success': False,
+                'error': f'Méthode inconnue: {methode}'
+            }))
+            sys.exit(1)
+    
+    except Exception as e:
+        print(json.dumps({
+            'success': False,
+            'error': str(e)
+        }))
+        sys.exit(1)

@@ -36,7 +36,8 @@ const allowedOrigins = [
   'https://automate-formation-dashboard-5i7p.onrender.com', // Dashboard Admin
   'https://automate-formation.onrender.com',
   'http://localhost:3000',
-  'http://localhost:3001'
+  'http://localhost:3001',
+  'http://localhost:5173'  // Vite dev server (dashboard)
 ];
 
 // Add FRONTEND_URL from env if it exists

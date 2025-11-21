@@ -35,6 +35,23 @@ export function SessionDetail() {
     }
   };
 
+  const handleGenerateAndSendProposition = async () => {
+    if (!window.confirm('Générer et envoyer la proposition commerciale par email au client ?')) return;
+
+    try {
+      setActionLoading(true);
+      const response = await sessionsApi.generateAndSendProposition(id);
+      await loadSessionData();
+      alert('✅ Proposition générée et envoyée avec succès !\n\nLe client a reçu par email :\n• La proposition commerciale (PDF)\n• Le programme de formation (PDF)');
+    } catch (error) {
+      console.error('Erreur:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Erreur inconnue';
+      alert(`❌ Erreur lors de la génération/envoi de la proposition:\n\n${errorMessage}`);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleMarkDevisSent = async () => {
     try {
       setActionLoading(true);
@@ -383,20 +400,24 @@ export function SessionDetail() {
 
                       {session.statut === 'en_attente' && !session.devis_envoye_le && (
                         <div>
-                          <p className="font-medium text-yellow-600">⏳ Devis à envoyer</p>
+                          <p className="font-medium text-yellow-600">⏳ Proposition à envoyer</p>
                           <p className="text-sm text-gray-500 mt-1">
-                            Envoyez le devis par email, puis marquez-le comme envoyé
+                            Générez automatiquement la proposition commerciale et le programme de formation, puis envoyez-les par email au client
                           </p>
-                          <Button
-                            onClick={handleMarkDevisSent}
-                            disabled={actionLoading}
-                            variant="primary"
-                            size="sm"
-                            className="mt-2"
-                          >
-                            <Send className="w-4 h-4" />
-                            Marquer comme envoyé
-                          </Button>
+                          <div className="flex gap-2 mt-3">
+                            <Button
+                              onClick={handleGenerateAndSendProposition}
+                              disabled={actionLoading}
+                              variant="primary"
+                              size="sm"
+                            >
+                              <Send className="w-4 h-4" />
+                              {actionLoading ? 'Génération en cours...' : '📧 Générer et envoyer la proposition'}
+                            </Button>
+                          </div>
+                          <p className="text-xs text-gray-400 mt-2">
+                            💡 Cette action génère 2 PDFs (proposition + programme) et les envoie automatiquement par email
+                          </p>
                         </div>
                       )}
 
