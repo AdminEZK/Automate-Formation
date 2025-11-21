@@ -316,20 +316,25 @@ class SupabaseService {
     try {
       console.log('[updateSession] Demande de mise à jour', { id, sessionData });
 
-      const { data, error } = await supabase
+      // Faire l'UPDATE sans .select() pour éviter les problèmes de rowCount = 0
+      const { error } = await supabase
         .from('sessions_formation')
         .update(sessionData)
-        .eq('id', id)
-        .select();
+        .eq('id', id);
 
       if (error) {
         console.error('[updateSession] Erreur Supabase', { id, sessionData, error });
         throw error;
       }
 
-      console.log('[updateSession] Résultat mise à jour', { id, rowCount: data?.length || 0, data });
+      console.log('[updateSession] UPDATE exécuté sans erreur, rechargement de la session depuis la vue');
 
-      return data[0];
+      // Recharger la session depuis vue_sessions_formation pour avoir l'état à jour
+      const updatedSession = await this.getSessionById(id);
+
+      console.log('[updateSession] Session rechargée', { id, statut: updatedSession?.statut });
+
+      return updatedSession;
     } catch (error) {
       console.error(`Erreur lors de la mise à jour de la session ${id}:`, error);
       throw error;
